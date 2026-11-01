@@ -1,0 +1,29 @@
+.kb { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; user-select: none; }
+.row { display: flex; gap: 6px; }
+.key {
+  position: relative; flex: 1 1 0; min-width: 0; height: 40px;
+  border-radius: var(--r-key); border: 1px solid var(--cap-border);
+  background: var(--cap); color: var(--cap-ink); font: 500 12.5px var(--font-ui);
+  box-shadow: 0 var(--depth) 0 var(--cap-edge);
+  backdrop-filter: blur(4px);
+  transition: transform 0.09s var(--spring), box-shadow 0.09s, background-color 0.25s, color 0.25s;
+}
+.l { position: absolute; left: 8px; top: 5px; text-transform: uppercase; }
+.c { position: absolute; right: 7px; bottom: 4px; font-size: 10px; color: var(--cap-mute); text-transform: uppercase; }
+.mod { flex-grow: 1.5; background: var(--mod); color: var(--mod-ink); }
+.mod .l { font-size: 10px; }
+.space { flex-grow: 6.5; }
+.esc { background: var(--acc); color: var(--acc-ink); box-shadow: 0 var(--depth) 0 var(--acc-edge); transition: background-color 0.6s; }
+.home::after { content: ""; position: absolute; left: 8px; bottom: 6px; width: 10px; height: 2px; border-radius: 2px; background: var(--cap-mute); }
+.down {
+  transform: translateY(calc(var(--depth) - 1px));
+  background: var(--key-hit);
+  color: var(--acc-text);
+  box-shadow: 0 0 18px hsl(var(--glow-h) 95% 60% / 0.6), 0 1px 0 var(--cap-edge);
+}
+@media (max-width: 560px) {
+  .kb, .row { gap: 4px; }
+  .key { height: 32px; }
+  .c, .mod .l { display: none; }
+  .l { left: 50%; transform: translateX(-50%); top: 7px; font-size: 11px; }
+}

@@ -1,0 +1,15 @@
+.page {
+  max-width: 980px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 28px max(16px, env(safe-area-inset-right, 0px)) 40px max(16px, env(safe-area-inset-left, 0px));
+}
+.top { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.logo { display: flex; align-items: center; gap: 10px; font: 400 20px var(--font-logo); letter-spacing: -0.02em; color: var(--ink); text-decoration: none; }
+.logo i { width: 14px; height: 14px; border-radius: 4px; background: var(--acc); box-shadow: 0 3px 0 var(--acc-edge), 0 0 12px var(--acc); transition: background-color 0.6s, box-shadow 0.6s; }
+.group { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.main { flex: 1; display: flex; flex-direction: column; gap: 18px; }
+.foot { color: var(--muted); font-size: 12px; max-width: 80ch; }

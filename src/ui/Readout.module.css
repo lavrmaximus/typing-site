@@ -1,0 +1,12 @@
+.row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.plate { flex-direction: column; align-items: flex-start; gap: 0; min-width: 88px; padding: 8px 15px; cursor: default; }
+.plate b { font: 500 21px var(--font-code); color: var(--cap-ink); font-variant-numeric: tabular-nums; }
+.plate b.hot { color: var(--acc-text); transition: color 0.6s; }
+.plate span { font-size: 10.5px; letter-spacing: 0.07em; text-transform: uppercase; }
+.grow { flex: 1 1 140px; align-items: stretch; justify-content: center; }
+.meter { height: 8px; border-radius: 6px; background: var(--screen); overflow: hidden; box-shadow: inset 0 1px 3px var(--screen-shadow); }
+.meter i { display: block; height: 100%; background: var(--acc); border-radius: 6px; transition: width 0.3s var(--ease), background-color 0.6s; }
+@media (max-width: 560px) {
+  .plate { min-width: 70px; padding: 7px 10px; }
+  .plate b { font-size: 17px; }
+}

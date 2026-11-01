@@ -6,7 +6,8 @@ export default defineConfig({
   timeout: 60_000,
   fullyParallel: true,
   reporter: [["list"]],
-  use: { baseURL: `http://localhost:${PORT}` },
+  use: { baseURL: `http://localhost:${PORT}`, actionTimeout: 10_000 },
+  expect: { timeout: 7_000 },
   webServer: {
     command: `npx next start -p ${PORT}`,
     url: `http://localhost:${PORT}/ru/code`,

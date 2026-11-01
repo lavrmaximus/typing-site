@@ -1,0 +1,27 @@
+.cap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 7px 14px;
+  border: 1px solid var(--cap-border);
+  border-radius: var(--r-cap);
+  background: var(--cap);
+  color: var(--cap-mute);
+  font: 500 13px var(--font-ui);
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 var(--depth) 0 var(--cap-edge), 0 calc(var(--depth) + 4px) 10px -5px rgba(0, 0, 0, 0.3);
+  transition: transform 0.14s var(--spring), box-shadow 0.14s, color 0.2s, background-color 0.2s;
+}
+.cap:hover { color: var(--cap-ink); }
+.cap:active, .pressed {
+  transform: translateY(calc(var(--depth) - 1px));
+  box-shadow: 0 1px 0 var(--cap-edge), 0 2px 4px -2px rgba(0, 0, 0, 0.25);
+}
+.pressed { color: var(--cap-ink); }
+.accent { background: var(--acc); color: var(--acc-ink); box-shadow: 0 var(--depth) 0 var(--acc-edge), 0 0 18px -4px var(--acc); }
+.accent:hover { color: var(--acc-ink); }

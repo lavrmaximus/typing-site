@@ -1,0 +1,104 @@
+/* Design: "Keys / Backlight" — a night-time mechanical keyboard. Dark is primary.
+   The accent is the backlight: its hue follows typing speed (--glow-h, set on .device). */
+:root {
+  --glow-h: 205;
+  --glow-a: 0.18;
+  --case: #0c0e14;
+  --ink: #e9ecf4;
+  --muted: #8a91a6;
+  --deck: #151823;
+  --deck-edge: #07080c;
+  --cap: rgba(255, 255, 255, 0.06);
+  --cap-solid: #1b1f2b;
+  --cap-edge: rgba(0, 0, 0, 0.6);
+  --cap-ink: #dfe4f0;
+  --cap-mute: #6d7488;
+  --cap-border: rgba(255, 255, 255, 0.07);
+  --mod: rgba(255, 255, 255, 0.03);
+  --mod-ink: #9aa1b5;
+  --screen: #07080d;
+  --screen-shadow: rgba(0, 0, 0, 0.8);
+  --scr-ink: #eef1f8;
+  --todo: #3a4153;
+  --num-col: #2a2f3d;
+  --err: #ff5d73;
+  --err-bg: rgba(255, 93, 115, 0.16);
+  --s-kw: #8fb4ff;
+  --s-str: #8fe3b0;
+  --s-num: #ffc078;
+  --s-fn: #7fd7ff;
+  --s-bi: #b69cff;
+  --s-com: #5d667e;
+  --acc: hsl(var(--glow-h) 95% 62%);
+  --acc-edge: hsl(var(--glow-h) 80% 35%);
+  --acc-text: hsl(var(--glow-h) 95% 68%);
+  --acc-ink: #06070b;
+  --key-hit: hsl(var(--glow-h) 90% 60% / 0.35);
+  --depth: 3px;
+  --r-cap: 10px;
+  --r-key: 9px;
+  --ease: cubic-bezier(0.22, 0.8, 0.24, 1);
+  --spring: cubic-bezier(0.3, 0.7, 0.4, 1);
+  --font-ui: var(--font-rubik), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-logo: var(--font-rubik-mono), var(--font-rubik), sans-serif;
+  --font-code: var(--font-jetbrains), ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --case: #e9ecf2;
+  --ink: #151823;
+  --muted: #5b6275;
+  --deck: #f6f7fa;
+  --deck-edge: #c9ced9;
+  --cap: rgba(255, 255, 255, 0.8);
+  --cap-solid: #ffffff;
+  --cap-edge: #c3c9d6;
+  --cap-ink: #1c2030;
+  --cap-mute: #8b92a4;
+  --cap-border: rgba(0, 0, 0, 0.06);
+  --mod: rgba(220, 225, 235, 0.8);
+  --mod-ink: #4a5164;
+  --screen: #10131b;
+  --acc: hsl(var(--glow-h) 90% 50%);
+  --acc-text: hsl(var(--glow-h) 85% 40%);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    --case: #e9ecf2;
+    --ink: #151823;
+    --muted: #5b6275;
+    --deck: #f6f7fa;
+    --deck-edge: #c9ced9;
+    --cap: rgba(255, 255, 255, 0.8);
+    --cap-solid: #ffffff;
+    --cap-edge: #c3c9d6;
+    --cap-ink: #1c2030;
+    --cap-mute: #8b92a4;
+    --cap-border: rgba(0, 0, 0, 0.06);
+    --mod: rgba(220, 225, 235, 0.8);
+    --mod-ink: #4a5164;
+    --acc: hsl(var(--glow-h) 90% 50%);
+    --acc-text: hsl(var(--glow-h) 85% 40%);
+    color-scheme: light;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body {
+  margin: 0;
+  background: var(--case);
+  color: var(--ink);
+  font: 15px/1.5 var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.4s, color 0.4s;
+}
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--acc); outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

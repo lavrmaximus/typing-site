@@ -20,3 +20,28 @@ test("html lang attribute follows route", async ({ page }) => {
   await page.goto("/en/text");
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
 });
+
+test("shell renders keycap nav and switches language keeping mode", async ({ page }) => {
+  await page.goto("/ru/text");
+  await page.getByRole("link", { name: "EN", exact: true }).click();
+  await expect(page).toHaveURL(/\/en\/text$/);
+  await expect(page.getByRole("link", { name: "Code", exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Text", exact: true })).toHaveAttribute("aria-current", "page");
+});
+
+test("theme toggle persists", async ({ page }) => {
+  await page.goto("/ru/code");
+  const html = page.locator("html");
+  const before = await html.getAttribute("data-theme");
+  await page.getByRole("button", { name: /тема/i }).click();
+  const after = before === "dark" ? "light" : "dark";
+  await expect(html).toHaveAttribute("data-theme", after);
+  await page.reload();
+  await expect(html).toHaveAttribute("data-theme", after);
+});
+
+test("device glows with a hue variable", async ({ page }) => {
+  await page.goto("/ru/code");
+  const hue = await page.getByTestId("device").evaluate((el) => getComputedStyle(el).getPropertyValue("--glow-h").trim());
+  expect(hue).toBe("205");
+});

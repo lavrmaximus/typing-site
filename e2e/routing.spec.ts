@@ -42,6 +42,7 @@ test("theme toggle persists", async ({ page }) => {
 
 test("device glows with a hue variable", async ({ page }) => {
   await page.goto("/ru/code");
+  await page.getByTestId("stage").waitFor();
   const hue = await page.getByTestId("device").evaluate((el) => getComputedStyle(el).getPropertyValue("--glow-h").trim());
   expect(hue).toBe("205");
 });

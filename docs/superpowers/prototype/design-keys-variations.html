@@ -1,0 +1,331 @@
+<title>Ритм: вариации клавиш</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Rubik+Mono+One&family=JetBrains+Mono:wght@400;500;700&family=Golos+Text:wght@400;500;800&display=swap">
+<style>
+/* Layout: catalogue page; each variation is a live device mockup with notes alongside. */
+:root {
+  --bg: #eceef1; --fg: #16191f; --muted: #6c7380; --line: #d5d9df; --card: #f8f9fa; --accent: #3b4250;
+  --f-body: "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #121418; --fg: #e8eaee; --muted: #808897; --line: #262a31; --card: #181b20; --accent: #c9ced8; color-scheme: dark; } }
+:root[data-theme="dark"] { --bg: #121418; --fg: #e8eaee; --muted: #808897; --line: #262a31; --card: #181b20; --accent: #c9ced8; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 15px/1.55 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 36px 64px; }
+.wrapall { max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 64px; }
+.intro h1 { font: 800 clamp(28px, 4vw, 40px)/1.1 var(--f-body); letter-spacing: -.025em; margin: 0 0 12px; text-wrap: balance; }
+.intro p { margin: 0; color: var(--muted); max-width: 66ch; }
+.dir { display: grid; grid-template-columns: minmax(0, 1fr) 270px; gap: 28px; align-items: start; }
+.dir header { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.dir header .tag { font: 600 13px var(--f-body); color: var(--bg); background: var(--fg); border-radius: 6px; padding: 2px 9px; }
+.dir header h2 { margin: 0; font: 800 26px/1.1 var(--f-body); letter-spacing: -.02em; }
+.dir header p { margin: 0; color: var(--muted); flex-basis: 100%; max-width: 72ch; }
+.notes { display: flex; flex-direction: column; gap: 16px; font-size: 13.5px; }
+.notes h4 { margin: 0 0 4px; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.notes p { margin: 0; }
+.sw { display: flex; gap: 6px; flex-wrap: wrap; }
+.sw i { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--line); }
+.toggle { align-self: flex-start; border: 1px solid var(--line); background: var(--card); color: var(--fg); font: 500 13px var(--f-body); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+.toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.frame { border-radius: 16px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 30px 60px -40px rgba(0,0,0,.45); min-width: 0; }
+.bar { display: flex; align-items: center; gap: 10px; padding: 9px 14px; font: 12px var(--f-body); background: var(--card); color: var(--muted); border-bottom: 1px solid var(--line); }
+.bar span { background: var(--bg); border-radius: 999px; padding: 3px 12px; }
+
+/* ---------- shared device anatomy (each variation only sets tokens + a few flourishes) ---------- */
+.m {
+  position: relative; background: var(--case); color: var(--ink); font-family: var(--f-ui);
+  padding: 26px 28px 28px; transition: background-color .5s, color .5s; overflow: hidden;
+}
+.top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; position: relative; z-index: 1; }
+.logo { font: 400 19px var(--f-logo); letter-spacing: -.02em; display: flex; align-items: center; gap: 10px; color: var(--ink); }
+.logo i { width: 14px; height: 14px; border-radius: 4px; background: var(--acc); box-shadow: 0 3px 0 var(--acc-edge); }
+.caps { display: flex; gap: 8px; flex-wrap: wrap; }
+.cap {
+  background: var(--cap); color: var(--cap-mute); border-radius: var(--r-cap); padding: 8px 14px; font: 500 13px var(--f-ui);
+  box-shadow: 0 var(--depth) 0 var(--cap-edge), 0 calc(var(--depth) + 4px) 10px -5px rgba(0,0,0,.3);
+  transition: transform .14s cubic-bezier(.3,.7,.4,1), box-shadow .14s, background-color .2s, color .2s; position: relative;
+}
+.cap.on { color: var(--cap-ink); transform: translateY(calc(var(--depth) - 1px)); box-shadow: 0 1px 0 var(--cap-edge), 0 2px 4px -2px rgba(0,0,0,.25); }
+.device {
+  position: relative; z-index: 1; margin-top: 22px; background: var(--deck); border-radius: 22px; padding: 14px;
+  box-shadow: 0 6px 0 var(--deck-edge), 0 26px 44px -26px rgba(0,0,0,.5); transition: box-shadow .6s;
+}
+.screen { position: relative; background: var(--screen); border-radius: 12px; padding: 14px 0; box-shadow: inset 0 2px 10px var(--screen-shadow); overflow: hidden; }
+.win { --lh: 32px; position: relative; overflow: hidden; height: calc(var(--lh) * 5); font: 15px var(--f-code); color: var(--scr-ink); }
+.content { position: relative; transition: transform .5s cubic-bezier(.22,.8,.24,1); font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+.ln { display: flex; height: var(--lh); line-height: var(--lh); white-space: pre; }
+.ln .n { flex: none; width: 46px; padding-right: 16px; text-align: right; color: var(--num-col); font-size: 12px; user-select: none; }
+.ln.cur .n { color: var(--acc); }
+.ch { position: relative; transition: color .12s; }
+.ch.todo { color: var(--todo); } .ch.ok { color: var(--scr-ink); }
+.ch.ok.kw { color: var(--s-kw); } .ch.ok.num { color: var(--s-num); } .ch.ok.bi { color: var(--s-bi); }
+.ch.err { color: var(--err); background: var(--err-bg); border-radius: 3px; }
+.ch.err::after { content: attr(data-exp); position: absolute; left: 50%; top: 86%; transform: translateX(-50%); font-size: .62em; line-height: 1; opacity: .75; color: var(--scr-ink); }
+.caret { position: absolute; left: 0; top: 0; width: 9px; border-radius: 2px; background: var(--acc); opacity: .85; box-shadow: 0 0 14px var(--acc); transition: transform .11s cubic-bezier(.22,.8,.24,1); }
+.mfade { position: absolute; left: 0; right: 0; height: 24px; pointer-events: none; z-index: 2; }
+.mfade.t { top: 14px; background: linear-gradient(var(--screen), transparent); } .mfade.b { bottom: 14px; background: linear-gradient(transparent, var(--screen)); }
+.readout { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.readout .cap { display: flex; flex-direction: column; padding: 9px 15px; min-width: 88px; }
+.readout b { font: 500 21px var(--f-code); color: var(--cap-ink); font-variant-numeric: tabular-nums; }
+.readout b.hot { color: var(--acc-text); }
+.readout span { font-size: 10.5px; letter-spacing: .07em; text-transform: uppercase; }
+.readout .grow { flex: 1 1 120px; justify-content: center; }
+.meter { height: 8px; border-radius: 6px; background: var(--screen); overflow: hidden; box-shadow: inset 0 1px 3px var(--screen-shadow); }
+.meter i { display: block; height: 100%; width: 0; background: var(--acc); border-radius: 6px; transition: width .3s; }
+
+.kb { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; user-select: none; }
+.krow { display: flex; gap: 6px; }
+.key {
+  flex: 1 1 0; min-width: 0; height: 40px; border-radius: var(--r-key); background: var(--cap); color: var(--cap-ink);
+  box-shadow: 0 var(--depth) 0 var(--cap-edge); position: relative; font: 500 12.5px var(--f-ui);
+  transition: transform .09s cubic-bezier(.3,.7,.4,1), box-shadow .09s, background-color .25s, color .25s;
+}
+.key .l { position: absolute; left: 8px; top: 5px; text-transform: uppercase; }
+.key .c { position: absolute; right: 7px; bottom: 4px; font-size: 10px; color: var(--cap-mute); text-transform: uppercase; }
+.key.mod { background: var(--mod); color: var(--mod-ink); flex-grow: 1.5; }
+.key.mod .l { font-size: 10px; }
+.key.space { flex-grow: 6.5; }
+.key.esc { background: var(--acc); color: var(--acc-ink); box-shadow: 0 var(--depth) 0 var(--acc-edge); }
+.key.down { transform: translateY(calc(var(--depth) - 1px)); box-shadow: 0 1px 0 var(--cap-edge); background: var(--key-hit); }
+.key.home::after { content: ""; position: absolute; left: 50%; bottom: 6px; width: 10px; height: 2px; margin-left: -5px; border-radius: 2px; background: var(--cap-mute); }
+
+/* ===================== 1 · Ретро ===================== */
+.v1 { --f-ui: "Rubik", system-ui, sans-serif; --f-logo: "Rubik Mono One", "Rubik", sans-serif; --f-code: "JetBrains Mono", ui-monospace, monospace;
+  --r-cap: 6px; --r-key: 6px; --depth: 4px;
+  --case: #d8d1c2; --ink: #2b2925; --deck: #cbc3b1; --deck-edge: #a89f8a;
+  --cap: #ece6d8; --cap-edge: #b3aa95; --cap-ink: #3a3731; --cap-mute: #8a8476; --mod: #8e8a82; --mod-ink: #f1ede4;
+  --acc: #d6402b; --acc-edge: #9c2a1a; --acc-ink: #fff; --acc-text: #c2381f; --key-hit: #e0d6c0;
+  --screen: #1f1c17; --screen-shadow: rgba(0,0,0,.7); --scr-ink: #f0e3c4; --todo: #5b5446; --num-col: #4a4439; --err: #ff6a4d; --err-bg: rgba(255,106,77,.16);
+  --s-kw: #ffb35c; --s-num: #ffd88a; --s-bi: #9fd8b0; }
+.v1[data-mode="dark"] { --case: #2a2825; --ink: #ece6d8; --deck: #34312d; --deck-edge: #1b1a18;
+  --cap: #46423c; --cap-edge: #22201d; --cap-ink: #ece6d8; --cap-mute: #9c968a; --mod: #5c5850; --mod-ink: #ece6d8; --key-hit: #57524a; --acc-text: #ff7a5e; }
+.v1 .screen::before { content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background: repeating-linear-gradient(transparent 0 2px, rgba(0,0,0,.18) 2px 3px); border-radius: inherit; }
+.v1 .screen { border-radius: 18px / 14px; }
+.v1 .ch.ok { text-shadow: 0 0 8px rgba(255,190,110,.25); }
+.v1 .badge { font: 500 10px var(--f-code); color: var(--cap-mute); letter-spacing: .14em; text-transform: uppercase; }
+
+/* ===================== 2 · Пастель ===================== */
+.v2 { --f-ui: "Rubik", system-ui, sans-serif; --f-logo: "Rubik Mono One", "Rubik", sans-serif; --f-code: "JetBrains Mono", ui-monospace, monospace;
+  --r-cap: 14px; --r-key: 12px; --depth: 5px;
+  --case: #f1ecf6; --ink: #2d2640; --deck: #ffffff; --deck-edge: #ddd3ea;
+  --cap: #fbf8f2; --cap-edge: #e3dccd; --cap-ink: #3a3350; --cap-mute: #a69fb5; --mod: #cfc3ef; --mod-ink: #3a2f63;
+  --acc: #ff9a76; --acc-edge: #e0714c; --acc-ink: #3a1c10; --acc-text: #e86a42; --key-hit: #ffe0d3;
+  --screen: #f7f4fb; --screen-shadow: rgba(80,60,130,.18); --scr-ink: #2d2640; --todo: #c2bbd2; --num-col: #cfc8de; --err: #e5484d; --err-bg: rgba(229,72,77,.12);
+  --s-kw: #7c4dff; --s-num: #e86a42; --s-bi: #138a7e; }
+.v2[data-mode="dark"] { --case: #1d1828; --ink: #f1ecf6; --deck: #272035; --deck-edge: #120e1a;
+  --cap: #3a3150; --cap-edge: #1d1828; --cap-ink: #f1ecf6; --cap-mute: #9d93b6; --mod: #5a4a8c; --mod-ink: #f1ecf6; --key-hit: #6b4b44;
+  --screen: #15111e; --screen-shadow: rgba(0,0,0,.6); --scr-ink: #f1ecf6; --todo: #4c4362; --num-col: #3d3550; --err: #ff7a7e; --err-bg: rgba(255,122,126,.15);
+  --s-kw: #b9a2ff; --s-num: #ffb199; --s-bi: #7fe0d2; --acc-text: #ffb199; }
+.v2 .key.mod.alt { background: #bfe8d8; color: #1f4f43; }
+.v2[data-mode="dark"] .key.mod.alt { background: #2f6b5c; color: #e6fff6; }
+.v2 .caret { box-shadow: 0 0 0 3px color-mix(in srgb, var(--acc) 25%, transparent); }
+.v2 .blob { position: absolute; z-index: 0; width: 340px; height: 340px; border-radius: 50%; filter: blur(60px); opacity: .55; pointer-events: none; }
+.v2 .blob.a { background: #cfc3ef; right: -120px; top: -140px; } .v2 .blob.b { background: #ffd2c2; left: -140px; bottom: -160px; }
+.v2[data-mode="dark"] .blob { opacity: .18; }
+
+/* ===================== 3 · Подсветка ===================== */
+.v3 { --f-ui: "Rubik", system-ui, sans-serif; --f-logo: "Rubik Mono One", "Rubik", sans-serif; --f-code: "JetBrains Mono", ui-monospace, monospace;
+  --r-cap: 10px; --r-key: 9px; --depth: 3px; --glow: 200;
+  --case: #0c0e14; --ink: #e9ecf4; --deck: #151823; --deck-edge: #07080c;
+  --cap: rgba(255,255,255,.06); --cap-edge: rgba(0,0,0,.6); --cap-ink: #dfe4f0; --cap-mute: #6d7488; --mod: rgba(255,255,255,.03); --mod-ink: #9aa1b5;
+  --acc: hsl(var(--glow) 95% 62%); --acc-edge: hsl(var(--glow) 80% 35%); --acc-ink: #06070b; --acc-text: hsl(var(--glow) 95% 66%); --key-hit: hsl(var(--glow) 90% 60% / .35);
+  --screen: #07080d; --screen-shadow: rgba(0,0,0,.8); --scr-ink: #eef1f8; --todo: #353b4c; --num-col: #2a2f3d; --err: #ff5d73; --err-bg: rgba(255,93,115,.16);
+  --s-kw: #8fb4ff; --s-num: #ffc078; --s-bi: #b69cff; }
+.v3[data-mode="light"] { --case: #e9ecf2; --ink: #151823; --deck: #f6f7fa; --deck-edge: #c9ced9;
+  --cap: rgba(255,255,255,.75); --cap-edge: #c3c9d6; --cap-ink: #1c2030; --cap-mute: #8b92a4; --mod: rgba(220,225,235,.8); --mod-ink: #4a5164;
+  --acc: hsl(var(--glow) 90% 50%); --acc-edge: hsl(var(--glow) 80% 35%); --acc-text: hsl(var(--glow) 85% 42%);
+  --screen: #10131b; }
+.v3 .device { box-shadow: 0 6px 0 var(--deck-edge), 0 0 0 1px rgba(255,255,255,.04), 0 30px 70px -20px hsl(var(--glow) 95% 55% / var(--glowA, .25)); }
+.v3 .key { border: 1px solid rgba(255,255,255,.07); backdrop-filter: blur(4px); }
+.v3[data-mode="light"] .key { border-color: rgba(0,0,0,.06); }
+.v3 .key.down { box-shadow: 0 0 18px hsl(var(--glow) 95% 60% / .6), 0 1px 0 var(--cap-edge); color: var(--acc-text); }
+.v3 .underglow { position: absolute; left: 10%; right: 10%; bottom: -30px; height: 60px; border-radius: 50%; z-index: 0; pointer-events: none;
+  background: hsl(var(--glow) 95% 55%); filter: blur(40px); opacity: var(--glowA, .25); transition: opacity .4s; }
+.v3 .logo i { box-shadow: 0 0 12px var(--acc); }
+
+@media (max-width: 860px) { .dir { grid-template-columns: 1fr; } }
+@media (max-width: 560px) {
+  .m { padding: 18px 14px 20px; }
+  .win { font-size: 12.5px; --lh: 28px; }
+  .ln .n { width: 34px; padding-right: 10px; }
+  .key { height: 32px; } .key .c { display: none; } .key .l { left: 50%; transform: translateX(-50%); top: 7px; font-size: 11px; }
+  .kb, .krow { gap: 4px; }
+  .key.mod .l { display: none; }
+  .readout .cap { min-width: 70px; padding: 8px 10px; } .readout b { font-size: 17px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="wrapall">
+  <section class="intro">
+    <h1>Вариации «Клавиш»</h1>
+    <p>Три варианта одного направления. Код печатается сам, клавиатура под экраном нажимается в такт. На клавишах латиница и кириллица, как на русской клавиатуре. Эта же клавиатура пригодится в курсе слепой печати. Под каждым макетом есть переключатель темы.</p>
+  </section>
+
+  <section class="dir">
+    <header><span class="tag">1</span><h2>Ретро</h2>
+      <p>Бежевый пластик классических клавиатур девяностых, тёмно-серые служебные клавиши и одна красная Esc. Экран как старый монитор: тёплое свечение текста и едва заметные строки развёртки. Тёмная тема — «чёрная модель».</p></header>
+    <div class="frame"><div class="bar"><span>ritm.app/ru/code</span></div>
+      <div class="m v1" data-mode="light" data-sim></div></div>
+    <aside class="notes">
+      <div><h4>Характер</h4><p>Тепло и ностальгия, солидная механика. Анимация короткая и «щелчковая».</p></div>
+      <div><h4>Цвета</h4><div class="sw"><i style="background:#d8d1c2"></i><i style="background:#ece6d8"></i><i style="background:#8e8a82"></i><i style="background:#d6402b"></i><i style="background:#1f1c17"></i><i style="background:#f0e3c4"></i></div></div>
+      <button class="toggle" data-for="0">Тёмная тема</button>
+    </aside>
+  </section>
+
+  <section class="dir">
+    <header><span class="tag">2</span><h2>Пастель</h2>
+      <p>Современная кастомная клавиатура: толстые скруглённые клавиши, лавандовые и мятные служебные, персиковый акцент. Экран светлый, мягкие цветные пятна на фоне. Самый дружелюбный и «инстаграмный» вариант. Тёмная тема — сливовая.</p></header>
+    <div class="frame"><div class="bar"><span>ritm.app/ru/code</span></div>
+      <div class="m v2" data-mode="light" data-sim><div class="blob a"></div><div class="blob b"></div></div></div>
+    <aside class="notes">
+      <div><h4>Характер</h4><p>Лёгкость и игра. Клавиши глубже проседают, анимация мягкая и пружинистая.</p></div>
+      <div><h4>Цвета</h4><div class="sw"><i style="background:#f1ecf6"></i><i style="background:#fbf8f2"></i><i style="background:#cfc3ef"></i><i style="background:#bfe8d8"></i><i style="background:#ff9a76"></i><i style="background:#1d1828"></i></div></div>
+      <button class="toggle" data-for="1">Тёмная тема</button>
+    </aside>
+  </section>
+
+  <section class="dir">
+    <header><span class="tag">3</span><h2>Подсветка</h2>
+      <p>Игровая клавиатура ночью: полупрозрачные клавиши и подсветка снизу. Цвет подсветки зависит от скорости: на медленном наборе холодный синий, чем быстрее, тем теплее, на рекорде огненно-оранжевый. Нажатая клавиша вспыхивает.</p></header>
+    <div class="frame"><div class="bar"><span>ritm.app/ru/code</span></div>
+      <div class="m v3" data-mode="dark" data-sim><div class="underglow"></div></div></div>
+    <aside class="notes">
+      <div><h4>Характер</h4><p>Драйв и азарт. Скорость видна не только цифрой, но и цветом всего устройства.</p></div>
+      <div><h4>Цвета</h4><div class="sw"><i style="background:#0c0e14"></i><i style="background:#151823"></i><i style="background:hsl(200 95% 62%)"></i><i style="background:hsl(130 90% 55%)"></i><i style="background:hsl(30 95% 60%)"></i><i style="background:#e9ecf2"></i></div></div>
+      <button class="toggle" data-for="2">Светлая тема</button>
+    </aside>
+  </section>
+</div>
+
+<script>
+(() => {
+const SNIP = `def binary_search(items, target):
+    left, right = 0, len(items) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if items[mid] == target:
+            return mid
+        if items[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1`;
+const KW = new Set(["def", "while", "if", "else", "return"]), BI = new Set(["len"]);
+const TOK = (() => { const c = new Array(SNIP.length).fill(""); const re = /\b\d+\b|[A-Za-z_]\w*/g; let m;
+  while ((m = re.exec(SNIP))) { const k = /^\d/.test(m[0]) ? "num" : KW.has(m[0]) ? "kw" : BI.has(m[0]) ? "bi" : ""; for (let i = 0; i < m[0].length; i++) c[m.index + i] = k; } return c; })();
+const ROWS = [["qwertyuiop[]", "йцукенгшщзхъ"], ["asdfghjkl;'", "фывапролджэ"], ["zxcvbnm,./", "ячсмитьбю."]];
+const NEAR = "qwertyuiopasdfghjklzxcvbnm";
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const SHELL = (extra) => `
+  <div class="top"><div class="logo"><i></i>ритм${extra.badge || ""}</div>
+    <div class="caps"><span class="cap on">Код</span><span class="cap">Текст</span><span class="cap">RU · EN</span></div></div>
+  <div class="device">
+    <div class="screen"><div class="win"><div class="content"></div></div><div class="mfade t"></div><div class="mfade b"></div></div>
+    <div class="readout">
+      <div class="cap"><b class="hot" data-speed>0</b><span>зн/мин</span></div>
+      <div class="cap"><b data-acc>100%</b><span>точность</span></div>
+      <div class="cap"><b data-time>0:00</b><span>время</span></div>
+      <div class="cap grow"><div class="meter"><i data-prog></i></div></div>
+    </div>
+    <div class="kb">
+      ${ROWS.map(([l, c], ri) => `<div class="krow">${ri === 0 ? `<div class="key mod esc"><span class="l">esc</span></div>` : ri === 1 ? `<div class="key mod alt"><span class="l">caps</span></div>` : `<div class="key mod"><span class="l">shift</span></div>`}${[...l].map((ch, i) => `<div class="key${ch === "f" || ch === "j" ? " home" : ""}" data-k="${ch}"><span class="l">${ch}</span><span class="c">${c[i] || ""}</span></div>`).join("")}${ri === 1 ? `<div class="key mod alt"><span class="l">enter</span></div>` : ri === 2 ? `<div class="key mod"><span class="l">shift</span></div>` : `<div class="key mod"><span class="l">⌫</span></div>`}</div>`).join("")}
+      <div class="krow"><div class="key mod"><span class="l">ctrl</span></div><div class="key mod alt"><span class="l">alt</span></div><div class="key space" data-k=" "></div><div class="key mod alt"><span class="l">alt</span></div><div class="key mod"><span class="l">ctrl</span></div></div>
+    </div>
+  </div>`;
+
+function mount(root, idx) {
+  root.insertAdjacentHTML("beforeend", SHELL({ badge: idx === 0 ? `<span class="badge">&nbsp;model r</span>` : "" }));
+  const win = root.querySelector(".win"), content = root.querySelector(".content");
+  const lines = SNIP.split("\n"); const items = []; let p = 0;
+  lines.forEach((l, li) => {
+    const row = document.createElement("div"); row.className = "ln";
+    row.innerHTML = `<span class="n">${li + 1}</span><span class="code"></span>`;
+    const code = row.lastChild;
+    [...l].forEach((ch, j) => {
+      const s = document.createElement("span"); s.className = "ch todo " + (TOK[p + j] || ""); s.textContent = ch; code.appendChild(s);
+      items.push({ s, ch, li, tk: TOK[p + j] || "", lead: /^\s*$/.test(l.slice(0, j + 1)) });
+    });
+    const eol = document.createElement("span"); eol.className = "ch"; eol.textContent = " "; code.appendChild(eol);
+    if (li < lines.length - 1) items.push({ nl: true, li, eol });
+    p += l.length + 1; content.appendChild(row);
+  });
+  const rows = content.querySelectorAll(".ln");
+  const caret = document.createElement("div"); caret.className = "caret"; content.appendChild(caret);
+  const total = items.filter(x => !x.nl).length;
+  const q = s => root.querySelector(s);
+  let i = 0, ok = 0, keys = 0, errs = 0, t0 = 0, pendingErr = null;
+
+  function press(ch) {
+    let k = ch === "\n" ? root.querySelector(".krow:nth-child(2) .key:last-child") : root.querySelector(`.key[data-k="${CSS.escape((ch || "").toLowerCase())}"]`);
+    if (ch === "⌫") k = root.querySelector(".krow:first-child .key:last-child");
+    if (!k) return; k.classList.add("down"); setTimeout(() => k.classList.remove("down"), 110);
+  }
+  function place() {
+    const it = items[i]; const L = parseFloat(getComputedStyle(win).getPropertyValue("--lh")) || 32;
+    let el, x, li;
+    if (!it) { const last = items[items.length - 1]; el = last.s; x = el.offsetLeft + el.offsetWidth; li = last.li; }
+    else if (it.nl) { el = it.eol; x = el.offsetLeft; li = it.li; }
+    else { el = it.s; x = el.offsetLeft; li = it.li; }
+    const h = L * 0.62;
+    caret.style.height = h + "px";
+    caret.style.transform = `translate(${x}px, ${li * L + (L - h) / 2}px)`;
+    const off = Math.max(0, Math.min(li - 2, rows.length - 5));
+    content.style.transform = `translateY(${-off * L}px)`;
+    rows.forEach((r, k) => r.classList.toggle("cur", k === li));
+  }
+  function stats() {
+    const sec = t0 ? (Date.now() - t0) / 1000 : 0;
+    const cpm = sec > 0.8 ? Math.round(ok / (sec / 60)) : 0;
+    q("[data-speed]").textContent = cpm;
+    q("[data-acc]").textContent = (keys ? Math.round((keys - errs) / keys * 100) : 100) + "%";
+    q("[data-time]").textContent = `0:${String(Math.floor(sec)).padStart(2, "0")}`;
+    q("[data-prog]").style.width = (ok / total * 100) + "%";
+    if (idx === 2) { // glow: cold blue when slow -> warm orange when fast
+      const t = Math.max(0, Math.min(1, (cpm - 150) / 350));
+      root.style.setProperty("--glow", Math.round(205 - t * 180));
+      root.style.setProperty("--glowA", (0.18 + t * 0.35).toFixed(2));
+    }
+  }
+  function reset() {
+    items.forEach(it => { if (!it.nl) { it.s.className = "ch todo " + it.tk; it.s.textContent = it.ch; delete it.s.dataset.exp; } });
+    i = 0; ok = 0; keys = 0; errs = 0; t0 = 0; pendingErr = null; place(); stats();
+  }
+  function markOk(it) { it.s.classList.remove("todo", "err"); it.s.classList.add("ok"); it.s.textContent = it.ch; delete it.s.dataset.exp; }
+  // per-variation pace so the glow in #3 visibly travels from blue to orange
+  const pace = idx === 2 ? () => Math.max(70, 260 - (Date.now() - t0) / 60) : () => 110 + Math.random() * 150;
+  function step() {
+    if (!t0) t0 = Date.now();
+    let delay = pace() * (0.75 + Math.random() * 0.5);
+    if (pendingErr) {
+      const it = pendingErr; it.s.classList.replace("err", "todo"); it.s.textContent = it.ch; delete it.s.dataset.exp; pendingErr = null; delay = 260; press("⌫");
+    } else if (i >= items.length) { place(); stats(); setTimeout(() => { reset(); setTimeout(step, 900); }, 2600); return; }
+    else {
+      const it = items[i];
+      if (it.nl) { press("\n"); i++; keys++; ok++; while (items[i] && !items[i].nl && items[i].lead) { markOk(items[i]); i++; ok++; } delay = 280; }
+      else if (/[a-z]/.test(it.ch) && Math.random() < 0.045 && i > 3) {
+        const w = NEAR[(NEAR.indexOf(it.ch) + 1) % NEAR.length];
+        it.s.classList.replace("todo", "err"); it.s.textContent = w; it.s.dataset.exp = it.ch; press(w);
+        keys++; errs++; pendingErr = it; place(); stats(); setTimeout(step, 520); return;
+      } else { markOk(it); press(it.ch); i++; ok++; keys++; }
+    }
+    place(); stats(); setTimeout(step, delay);
+  }
+  if (reduce) { for (let k = 0; k < 120 && i < items.length; k++) { const it = items[i]; if (!it.nl) { markOk(it); ok++; } i++; keys++; } t0 = Date.now() - 20000; place(); stats(); }
+  else { place(); setTimeout(step, 500 + idx * 350); }
+  addEventListener("resize", place);
+  if (document.fonts) document.fonts.ready.then(place);
+}
+const sims = [...document.querySelectorAll("[data-sim]")];
+sims.forEach(mount);
+document.querySelectorAll(".toggle").forEach(btn => btn.addEventListener("click", () => {
+  const m = sims[+btn.dataset.for]; const dark = m.dataset.mode !== "dark";
+  m.dataset.mode = dark ? "dark" : "light"; btn.textContent = dark ? "Светлая тема" : "Тёмная тема";
+}));
+})();
+</script>

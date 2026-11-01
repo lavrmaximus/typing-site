@@ -1,0 +1,881 @@
+<title>Тренажёр печати Ритм</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Onest:wght@400;500;600&family=Unbounded:wght@500;700&display=swap">
+<style>
+/* Layout: one calm column; the typing window is the stage, everything else recedes around it. */
+:root {
+  --bg: #e9ecf1;
+  --surface: #f6f7fa;
+  --ink: #18202b;
+  --muted: #7d8697;
+  --todo: #a7aebb;
+  --line: #d6dbe3;
+  --accent: #c2700c;
+  --accent-soft: rgba(194,112,12,.14);
+  --err: #d0413a;
+  --err-soft: rgba(208,65,58,.14);
+  --syn-kw: #7a3db8;
+  --syn-str: #2f7d4f;
+  --syn-num: #b4570f;
+  --syn-fn: #1f62b8;
+  --syn-com: #8a93a3;
+  --syn-bi: #0f7f87;
+  --f1: rgba(124,92,214,.16);
+  --f2: rgba(31,98,184,.14);
+  --f3: rgba(15,127,135,.15);
+  --f4: rgba(47,125,79,.15);
+  --shadow: 0 1px 0 rgba(255,255,255,.7) inset, 0 18px 40px -24px rgba(24,32,43,.35);
+  --font-display: "Unbounded", "Onest", system-ui, sans-serif;
+  --font-body: "Onest", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --ease: cubic-bezier(.22,.8,.24,1);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11151c; --surface: #181d26; --ink: #e7eaf0; --muted: #6f7a8c; --todo: #4a5466; --line: #262d39;
+    --accent: #f2b544; --accent-soft: rgba(242,181,68,.16); --err: #ff6b5e; --err-soft: rgba(255,107,94,.16);
+    --syn-kw: #c49bff; --syn-str: #8fd19e; --syn-num: #ffb27a; --syn-fn: #79b8ff; --syn-com: #6f7a8c; --syn-bi: #6fd6df;
+    --f1: rgba(196,155,255,.14); --f2: rgba(121,184,255,.13); --f3: rgba(111,214,223,.12); --f4: rgba(143,209,158,.12);
+    --shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 24px 50px -28px rgba(0,0,0,.7);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11151c; --surface: #181d26; --ink: #e7eaf0; --muted: #6f7a8c; --todo: #4a5466; --line: #262d39;
+  --accent: #f2b544; --accent-soft: rgba(242,181,68,.16); --err: #ff6b5e; --err-soft: rgba(255,107,94,.16);
+  --syn-kw: #c49bff; --syn-str: #8fd19e; --syn-num: #ffb27a; --syn-fn: #79b8ff; --syn-com: #6f7a8c; --syn-bi: #6fd6df;
+  --f1: rgba(196,155,255,.14); --f2: rgba(121,184,255,.13); --f3: rgba(111,214,223,.12); --f4: rgba(143,209,158,.12);
+  --shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 24px 50px -28px rgba(0,0,0,.7);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 48px;
+}
+.wrap { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+
+/* header */
+header { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.logo { font-family: var(--font-display); font-weight: 700; font-size: 26px; letter-spacing: -.02em; display: flex; align-items: center; gap: 2px; }
+.logo .bar { width: 3px; height: 26px; background: var(--accent); border-radius: 2px; margin-left: 3px; animation: blink 1.1s steps(1) infinite; }
+.logo small { font-family: var(--font-body); font-weight: 500; font-size: 12px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-left: 12px; align-self: flex-end; padding-bottom: 4px; }
+@keyframes blink { 50% { opacity: 0; } }
+
+.seg { position: relative; display: inline-flex; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
+.seg button {
+  position: relative; z-index: 1; border: 0; background: none; color: var(--muted);
+  font: 500 14px var(--font-body); padding: 7px 16px; border-radius: 999px; cursor: pointer;
+  transition: color .25s var(--ease);
+}
+.seg button[aria-pressed="true"] { color: var(--ink); }
+.seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.seg .pill {
+  position: absolute; z-index: 0; top: 3px; bottom: 3px; left: 0; width: 0; border-radius: 999px;
+  background: var(--bg); box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 0 0 1px var(--line);
+  transition: transform .38s var(--ease), width .38s var(--ease);
+}
+.seg.small button { font-size: 13px; padding: 5px 12px; }
+
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.toolbar .left { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.chip { font: 500 12px var(--font-mono); color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 5px 10px; }
+.ghostbtn {
+  border: 1px solid var(--line); background: transparent; color: var(--ink); cursor: pointer;
+  font: 500 13px var(--font-body); padding: 6px 12px; border-radius: 999px;
+  transition: background .2s, border-color .2s, transform .2s var(--ease);
+}
+.ghostbtn:hover { background: var(--surface); border-color: var(--muted); }
+.ghostbtn:active { transform: scale(.97); }
+.ghostbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* stats */
+.stats { display: flex; gap: 28px; align-items: baseline; flex-wrap: wrap; font-variant-numeric: tabular-nums; }
+.stat b { font: 500 26px var(--font-mono); letter-spacing: -.02em; display: block; line-height: 1.1; transition: color .3s; }
+.stat span { font-size: 12px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+.stat.live b { color: var(--accent); }
+.progress { flex: 1 1 160px; height: 4px; background: var(--line); border-radius: 4px; overflow: hidden; align-self: center; }
+.progress i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 4px; transition: width .3s var(--ease); }
+
+/* stage */
+.stage {
+  position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 18px;
+  box-shadow: var(--shadow); overflow: hidden; cursor: text;
+}
+.stage .tabbar { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--line); font: 500 12px var(--font-mono); color: var(--muted); }
+.stage .tabbar .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); opacity: .8; }
+.stage .tabbar .ln { margin-left: auto; }
+.viewport { position: relative; overflow: hidden; overflow-x: auto; }
+.viewport.code { --lh: 34px; height: calc(var(--lh) * 5 + 28px); padding: 14px 0; }
+.viewport.text { --lh: 46px; height: calc(var(--lh) * 3 + 40px); padding: 20px 28px; }
+.fade { pointer-events: none; position: absolute; left: 0; right: 0; height: 28px; z-index: 3; }
+.fade.top { top: 0; background: linear-gradient(var(--surface), transparent); }
+.fade.bot { bottom: 0; background: linear-gradient(transparent, var(--surface)); }
+.viewport.text + .fade, .stage .fade { }
+.content { position: relative; font-feature-settings: "liga" 0, "calt" 0; transition: transform .45s var(--ease); will-change: transform; }
+
+.code .content { font: 400 16px/var(--lh) var(--font-mono); white-space: pre; min-width: max-content; padding-right: 24px; }
+.code .row { display: grid; grid-template-columns: 52px auto; height: var(--lh); }
+.code .num { color: var(--todo); text-align: right; padding-right: 18px; user-select: none; font-size: 13px; transition: color .25s; }
+.code .row.cur .num { color: var(--accent); }
+.code .row.cur { background: linear-gradient(90deg, var(--accent-soft), transparent 60%); }
+
+.text .content { font: 400 24px/var(--lh) var(--font-mono); white-space: pre-wrap; word-break: normal; overflow-wrap: anywhere; letter-spacing: -.01em; }
+.text.words .content { font-size: 25px; }
+
+/* typed text must show every character as typed: no "->" arrows or "<=" glyphs */
+.code .content, .text .content { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0, "dlig" 0; }
+.code .err[data-exp]::after { font-size: .68em; opacity: .7; top: 86%; }
+.c { transition: color .12s; }
+.todo { color: var(--todo); }
+.ok { color: var(--ink); }
+.ok.k-kw { color: var(--syn-kw); } .ok.k-str { color: var(--syn-str); } .ok.k-num { color: var(--syn-num); }
+.ok.k-fn { color: var(--syn-fn); } .ok.k-com { color: var(--syn-com); font-style: italic; } .ok.k-bi { color: var(--syn-bi); }
+.err { color: var(--err); background: var(--err-soft); border-radius: 3px; }
+.err[data-exp], .err[data-typed] { position: relative; }
+.err[data-exp]::after {
+  content: attr(data-exp); position: absolute; left: 50%; top: 92%; transform: translateX(-50%);
+  font-size: .5em; line-height: 1; color: var(--ink); opacity: .5; pointer-events: none; font-weight: 500;
+  animation: hintIn .25s var(--ease);
+}
+.err[data-typed]::before {
+  content: attr(data-typed); position: absolute; left: 0; bottom: 94%;
+  font-size: .5em; line-height: 1; color: var(--err); white-space: nowrap; pointer-events: none;
+  text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--err) 50%, transparent);
+  animation: hintIn .25s var(--ease);
+}
+@keyframes hintIn { from { opacity: 0; } }
+.extra { color: var(--err); text-decoration: line-through; opacity: .8; }
+.ghosts { margin-left: 1.2ch; color: var(--accent); opacity: .45; font-size: .85em; border-bottom: 1px dashed currentColor; }
+.ghostbtn[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.eol { display: inline-block; width: 0; }
+
+.caret {
+  position: absolute; left: 0; top: 0; width: 2px; border-radius: 2px; background: var(--accent); z-index: 2;
+  transition: transform .1s var(--ease);
+  box-shadow: 0 0 12px var(--accent);
+}
+.caret.idle { animation: blink 1s steps(1) infinite; }
+
+.focus-veil {
+  position: absolute; inset: 0; z-index: 5; display: flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--surface) 55%, transparent); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  font-weight: 500; color: var(--ink); opacity: 0; pointer-events: none; transition: opacity .3s var(--ease);
+}
+.focus-veil.on { opacity: 1; pointer-events: auto; }
+.focus-veil span { padding: 10px 18px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
+
+/* results */
+.result {
+  position: absolute; inset: 0; z-index: 6; display: flex; align-items: center; justify-content: center; padding: 18px;
+  background: color-mix(in srgb, var(--surface) 82%, transparent); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  opacity: 0; pointer-events: none; transition: opacity .35s var(--ease);
+}
+.result.on { opacity: 1; pointer-events: auto; }
+.result .card { display: flex; gap: 28px; align-items: center; flex-wrap: wrap; justify-content: center; transform: translateY(14px) scale(.98); transition: transform .5s var(--ease); }
+.result.on .card { transform: none; }
+.result .big { font: 700 64px/1 var(--font-display); letter-spacing: -.03em; color: var(--accent); }
+.result .big small { display: block; font: 500 12px var(--font-body); color: var(--muted); letter-spacing: .08em; text-transform: uppercase; margin-top: 8px; }
+.result .side { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.result .row2 { display: flex; gap: 22px; font-variant-numeric: tabular-nums; }
+.result .row2 b { font: 500 20px var(--font-mono); display: block; }
+.result .row2 span { font-size: 12px; color: var(--muted); }
+.result svg { width: 220px; max-width: 100%; height: 56px; overflow: visible; }
+
+/* hints */
+.hints { display: flex; flex-wrap: wrap; gap: 8px 18px; color: var(--muted); font-size: 13px; }
+.hints div { display: flex; align-items: center; gap: 7px; }
+kbd { font: 500 11.5px var(--font-mono); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 6px; padding: 2px 6px; }
+.source { font-size: 12.5px; color: var(--muted); }
+.source em { font-style: normal; color: var(--ink); }
+
+/* course */
+.course { display: grid; grid-template-columns: 210px 1fr; gap: 22px; align-items: start; }
+.lessons { display: flex; flex-direction: column; gap: 4px; }
+.lesson { display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 10px; font-size: 13.5px; color: var(--muted); }
+.lesson i { font: 500 11px var(--font-mono); font-style: normal; width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; flex: none; }
+.lesson.on { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
+.lesson.on i { background: var(--accent); color: var(--surface); border-color: var(--accent); }
+.course-main { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+.kbd { display: flex; flex-direction: column; gap: 6px; user-select: none; }
+.krow { display: flex; gap: 6px; }
+.key {
+  flex: 1 1 0; min-width: 0; height: 42px; border-radius: 9px; border: 1px solid var(--line);
+  display: grid; place-items: center; font: 500 14px var(--font-mono); color: var(--muted);
+  transition: transform .2s var(--ease), background .2s, color .2s, box-shadow .2s;
+  position: relative;
+}
+.key.f0, .key.f7 { background: var(--f1); } .key.f1, .key.f6 { background: var(--f2); }
+.key.f2, .key.f5 { background: var(--f3); } .key.f3, .key.f4 { background: var(--f4); }
+.key.mod { flex-grow: 1.6; font-size: 11px; background: transparent; }
+.key.space { flex-grow: 7; }
+.key.home::after { content: ""; position: absolute; bottom: 6px; width: 10px; height: 2px; border-radius: 2px; background: var(--muted); }
+.key.next { background: var(--accent); color: var(--surface); border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 18px -8px var(--accent); }
+.key.press { transform: translateY(1px) scale(.96); }
+.fingerhint { font-size: 13px; color: var(--muted); min-height: 20px; }
+.fingerhint b { color: var(--ink); font-weight: 600; }
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px);
+  background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 12px; font-size: 13.5px;
+  opacity: 0; pointer-events: none; transition: opacity .3s var(--ease), transform .3s var(--ease); z-index: 20; max-width: calc(100% - 32px);
+}
+.toast.on { opacity: 1; transform: translate(-50%, 0); }
+
+.note { border-top: 1px solid var(--line); padding-top: 18px; color: var(--muted); font-size: 13px; max-width: 70ch; }
+.note b { color: var(--ink); font-weight: 600; }
+
+#input { position: fixed; opacity: 0; width: 1px; height: 1px; left: 0; bottom: 0; font-size: 16px; resize: none; border: 0; padding: 0; }
+.view { animation: rise .45s var(--ease); }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+
+@media (max-width: 680px) {
+  .course { grid-template-columns: 1fr; }
+  .lessons { flex-direction: row; overflow-x: auto; }
+  .lesson { flex: none; }
+  .viewport.text { --lh: 38px; padding: 16px; }
+  .text .content { font-size: 19px; }
+  .stats { gap: 18px; }
+  .key { height: 34px; font-size: 12px; border-radius: 7px; }
+  .krow, .kbd { gap: 4px; }
+  .key.mod { font-size: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="logo">ритм<span class="bar"></span><small id="tagline">прототип</small></div>
+    <div class="seg" id="langSeg" role="group" aria-label="Язык">
+      <span class="pill"></span>
+      <button id="lang-ru" data-v="ru" aria-pressed="true">Рус</button>
+      <button id="lang-en" data-v="en" aria-pressed="false">Eng</button>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="seg" id="modeSeg" role="tablist">
+      <span class="pill"></span>
+      <button id="mode-code" data-v="code" aria-pressed="true">Код</button>
+      <button id="mode-text" data-v="text" aria-pressed="false">Текст</button>
+      <button id="mode-course" data-v="course" aria-pressed="false">Курс</button>
+    </div>
+    <div class="left" id="subbar"></div>
+  </div>
+
+  <div id="view"></div>
+
+  <p class="note" id="note"></p>
+</div>
+<textarea id="input" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="typing input"></textarea>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+"use strict";
+
+/* ---------- content ---------- */
+const SNIPPETS = [
+  { file: "binary_search.py", code:
+`def binary_search(items: list[int], target: int) -> int:
+    """Return index of target in sorted items, or -1."""
+    left, right = 0, len(items) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if items[mid] == target:
+            return mid
+        if items[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1
+
+
+if __name__ == "__main__":
+    data = [1, 3, 5, 7, 9, 11]
+    print(binary_search(data, 7))` },
+  { file: "top_words.py", code:
+`from collections import Counter
+
+
+def top_words(text: str, n: int = 3) -> list[tuple[str, int]]:
+    # split, clean punctuation, count
+    words = [w.strip(".,!?").lower() for w in text.split()]
+    counts = Counter(w for w in words if w)
+    return counts.most_common(n)
+
+
+if __name__ == "__main__":
+    sample = "to be or not to be, that is the question"
+    for word, count in top_words(sample):
+        print(f"{word}: {count}")` }
+];
+
+const TEXTS = {
+  ru: [
+    { t: "Говорили, что на набережной появилось новое лицо: дама с собачкой. Дмитрий Дмитрич Гуров, проживший в Ялте уже две недели и привыкший тут, тоже стал интересоваться новыми лицами.", src: "А. П. Чехов, «Дама с собачкой»" },
+    { t: "Все счастливые семьи похожи друг на друга, каждая несчастливая семья несчастлива по-своему. Всё смешалось в доме Облонских.", src: "Л. Н. Толстой, «Анна Каренина»" }
+  ],
+  en: [
+    { t: "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.", src: "Jane Austen, Pride and Prejudice" },
+    { t: "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness, it was the epoch of belief, it was the epoch of incredulity.", src: "Charles Dickens, A Tale of Two Cities" }
+  ]
+};
+const WORDS = {
+  ru: "и в не на я быть он с что а по это она этот к но они мы как из у который то за свой весь год от так о для ты же все тот мочь вы человек такой его сказать только или ещё бы себя один уже до время если сам когда другой вот говорить наш мой знать стать при чтобы дело жизнь кто первый очень два день её новый рука даже со раз где там под можно ну какой после их работа без самый потом надо хотеть ли слово идти большой должен место иметь ничто дом город вода свет утро".split(" "),
+  en: "the be to of and a in that have it for not on with he as you do at this but his by from they we say her she or an will my one all would there their what so up out if about who get which go me when make can like time no just him know take people into year your good some could them see other than then now look only come its over think also back after use two how our work first well way even new want because any these give day most us".split(" ")
+};
+const DRILL = {
+  ru: "вал дар пол лад вор рад ров дол фар лава овал дрова пора правда провал вода жар роль лапа рало".split(" "),
+  en: "sad lad dad ask flask glass salad fall hall shall flash gall lass dash half alfalfa jag hag".split(" ")
+};
+const LAYOUT = {
+  ru: ["ё1234567890-=", "йцукенгшщзхъ", "фывапролджэ", "ячсмитьбю."],
+  en: ["`1234567890-=", "qwertyuiop[]", "asdfghjkl;'", "zxcvbnm,./"]
+};
+const FINGERS = [
+  [0,0,1,2,3,3,4,4,5,6,7,7,7],
+  [0,1,2,3,3,4,4,5,6,7,7,7],
+  [0,1,2,3,3,4,4,5,6,7,7],
+  [0,1,2,3,3,4,4,5,6,7]
+];
+
+const I18N = {
+  ru: {
+    tagline: "прототип", modes: ["Код", "Текст", "Курс"], lit: "Литература", words: "Слова",
+    another: "Другой фрагмент", anotherText: "Другой текст", time: "время", unit: "зн/мин", acc: "точность",
+    veil: "Нажмите сюда и начинайте печатать", done: "Готово", again: "Ещё раз", line: "строка",
+    chars: "символов", errors: "ошибок",
+    hintsCode: [["( [ { \" '", "закрываются сами"], [")", "поверх готовой скобки просто сдвигает курсор"], ["Enter", "ставит отступ, после «:» глубже"], ["Ctrl+Enter", "новая строка из середины строки"], ["Backspace", "на отступе стирает 4 пробела"], ["Esc", "заново"]],
+    hintsText: [["Backspace", "исправить"], ["Ctrl+Backspace", "стереть слово"], ["Esc", "заново"]],
+    hintsPhone: [["Автозамена", "работает, опечатки исправляет клавиатура"], ["Свайп", "можно вводить слово росчерком"], ["Пробел", "слово проверяется целиком"]],
+    phone: "Ввод с телефона",
+    src: "Источник:", srcCode: "Учебный пример. В продукте фрагменты берутся из TheAlgorithms/Python (лицензия MIT).",
+    srcWords: "Случайные слова из списка самых частых слов языка.",
+    lessons: ["Основной ряд", "Верхний ряд", "Нижний ряд", "Цифры и знаки", "Заглавные и Shift", "Свободный текст"],
+    fingers: ["мизинец левой", "безымянный левой", "средний левой", "указательный левой", "указательный правой", "средний правой", "безымянный правой", "мизинец правой"],
+    nextKey: "Следующая клавиша", space: "пробел — большим пальцем", layoutToast: "Похоже, включена английская раскладка. Переключите на русскую.",
+    note: "<b>Это кликабельный прототип, а не готовый сайт.</b> Здесь можно попробовать, как ощущается режим для кода: окно в 5 строк сдвигается, когда вы проходите середину, скобки и кавычки ведут себя как в редакторе, отступы ставятся сами. Ошибки подсвечиваются, но не блокируют: их можно стереть. Дизайн, тексты и набор уроков пока черновые."
+  },
+  en: {
+    tagline: "prototype", modes: ["Code", "Text", "Course"], lit: "Literature", words: "Words",
+    another: "Another snippet", anotherText: "Another text", time: "time", unit: "wpm", acc: "accuracy",
+    veil: "Click here and start typing", done: "Done", again: "Again", line: "line",
+    chars: "chars", errors: "errors",
+    hintsCode: [["( [ { \" '", "close themselves"], [")", "over an auto-closed bracket just moves the cursor"], ["Enter", "auto-indents, deeper after “:”"], ["Ctrl+Enter", "new line from mid-line"], ["Backspace", "on indent deletes 4 spaces"], ["Esc", "restart"]],
+    hintsText: [["Backspace", "fix"], ["Ctrl+Backspace", "delete word"], ["Esc", "restart"]],
+    hintsPhone: [["Autocorrect", "on: the keyboard fixes typos"], ["Swipe", "glide-typing works"], ["Space", "each word is checked as a whole"]],
+    phone: "Phone input",
+    src: "Source:", srcCode: "Sample snippet. In the product, snippets come from TheAlgorithms/Python (MIT license).",
+    srcWords: "Random words from the language's most frequent words.",
+    lessons: ["Home row", "Top row", "Bottom row", "Numbers & symbols", "Capitals & Shift", "Free text"],
+    fingers: ["left pinky", "left ring", "left middle", "left index", "right index", "right middle", "right ring", "right pinky"],
+    nextKey: "Next key", space: "space — thumb", layoutToast: "Looks like a non-English layout is on. Switch to English.",
+    note: "<b>This is a clickable prototype, not the finished site.</b> Try how code mode feels: a 5-line window that scrolls once you pass the middle, editor-style brackets and quotes, automatic indentation. Mistakes are highlighted but never block you; just erase them. Design, texts and lessons are drafts."
+  }
+};
+
+/* ---------- state ---------- */
+const S = { phone: !!(window.matchMedia && matchMedia("(pointer: coarse)").matches), lang: "ru", mode: "code", textKind: "lit", snippet: 0, textIdx: 0,
+  target: "", buf: "", pending: "", started: 0, keys: 0, errs: 0, done: false, samples: [], timer: null, tokens: [] };
+let refs = {};
+let caretEl = null;
+const $ = (s, r = document) => r.querySelector(s);
+const input = $("#input");
+const t = () => I18N[S.lang];
+
+/* ---------- python tokenizer (for colour as you type) ---------- */
+const KW = new Set("def return if elif else while for in not and or is import from as class with try except finally raise pass break continue lambda yield None True False".split(" "));
+const BI = new Set("len print range list dict set tuple int str float bool sorted enumerate zip map filter sum min max abs open Counter".split(" "));
+function tokenize(src) {
+  const cls = new Array(src.length).fill("");
+  const re = /("""[\s\S]*?"""|'''[\s\S]*?'''|f?"[^"\n]*"|f?'[^'\n]*'|#[^\n]*|\b\d+(?:\.\d+)?\b|[A-Za-z_]\w*)/g;
+  let m, prevWord = "";
+  while ((m = re.exec(src))) {
+    const s = m[0]; let c = "";
+    if (s[0] === '"' || s[0] === "'" || /^f["']/.test(s)) c = "str";
+    else if (s[0] === "#") c = "com";
+    else if (/^\d/.test(s)) c = "num";
+    else if (KW.has(s)) c = "kw";
+    else if (prevWord === "def" || prevWord === "class") c = "fn";
+    else if (BI.has(s)) c = "bi";
+    else if (src[m.index + s.length] === "(") c = "fn";
+    for (let i = 0; i < s.length; i++) cls[m.index + i] = c;
+    if (/^[A-Za-z_]/.test(s)) prevWord = s;
+  }
+  return cls;
+}
+
+/* ---------- helpers ---------- */
+const vis = ch => ch === " " ? "␣" : ch;
+const attr = x => x.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+// wrong char: the slot shows what was actually typed, the expected char hangs faintly beneath it
+const errSpan = (typed, expected, at = "") => `<span class="c err${at}" data-exp="${attr(vis(expected))}">${esc(vis(typed))}</span>`;
+const esc = ch => ch === "<" ? "&lt;" : ch === ">" ? "&gt;" : ch === "&" ? "&amp;" : ch;
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function makeWords(list, n) { const out = []; while (out.length < n) out.push(...shuffle(list)); return out.slice(0, n).join(" "); }
+let toastT;
+function toast(msg) { const el = $("#toast"); el.textContent = msg; el.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove("on"), 2600); }
+
+function placePill(seg) {
+  const on = seg.querySelector('button[aria-pressed="true"]'); const pill = seg.querySelector(".pill");
+  if (!on || !pill) return;
+  pill.style.width = on.offsetWidth + "px";
+  pill.style.transform = `translateX(${on.offsetLeft}px)`;
+}
+function setSeg(seg, v) { seg.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === v))); placePill(seg); }
+
+/* ---------- build views ---------- */
+function build() {
+  const L = t();
+  $("#tagline").textContent = L.tagline;
+  ["code", "text", "course"].forEach((m, i) => { $("#mode-" + m).textContent = L.modes[i]; });
+  $("#note").innerHTML = L.note;
+  setSeg($("#langSeg"), S.lang); setSeg($("#modeSeg"), S.mode);
+
+  const sub = $("#subbar");
+  if (S.mode === "code") {
+    sub.innerHTML = `<span class="chip">Python</span><button class="ghostbtn" id="another">${L.another} ↻</button>`;
+    $("#another").onclick = () => { S.snippet = (S.snippet + 1) % SNIPPETS.length; reset(); focusInput(); };
+  } else if (S.mode === "text") {
+    sub.innerHTML = `<div class="seg small" id="kindSeg"><span class="pill"></span><button id="kind-lit" data-v="lit" aria-pressed="false">${L.lit}</button><button id="kind-words" data-v="words" aria-pressed="false">${L.words}</button></div><button class="ghostbtn" id="phoneBtn" aria-pressed="${S.phone}">${L.phone}</button><button class="ghostbtn" id="another">${L.anotherText} ↻</button>`;
+    $("#phoneBtn").onclick = () => { S.phone = !S.phone; build(); focusInput(); };
+    const ks = $("#kindSeg"); setSeg(ks, S.textKind);
+    ks.querySelectorAll("button").forEach(b => b.onclick = () => { S.textKind = b.dataset.v; setSeg(ks, S.textKind); reset(); focusInput(); });
+    $("#another").onclick = () => { S.textIdx++; reset(); focusInput(); };
+  } else {
+    sub.innerHTML = `<span class="chip">1 / ${L.lessons.length}</span>`;
+  }
+
+  const stage = `
+    <div class="stats">
+      <div class="stat live"><b id="st-speed">0</b><span>${L.unit}</span></div>
+      <div class="stat"><b id="st-acc">100%</b><span>${L.acc}</span></div>
+      <div class="stat"><b id="st-time">0:00</b><span>${L.time}</span></div>
+      <div class="progress"><i id="st-prog"></i></div>
+    </div>
+    <div class="stage" id="stage">
+      ${S.mode === "code" ? `<div class="tabbar"><span class="dot"></span><span>${SNIPPETS[S.snippet].file}</span><span class="ln" id="lnInfo"></span></div>` : ""}
+      <div class="viewport ${S.mode === "code" ? "code" : "text"} ${S.textKind === "words" && S.mode === "text" ? "words" : ""}" id="vp">
+        <div class="content" id="content"></div>
+      </div>
+      <div class="fade top"></div><div class="fade bot"></div>
+      <div class="focus-veil" id="veil"><span>${L.veil}</span></div>
+      <div class="result" id="result"></div>
+    </div>`;
+
+  const hints = (S.mode === "code" ? L.hintsCode : phoneMode() ? L.hintsPhone : L.hintsText).map(([k, d]) => `<div>${k.split(" ").map(x => `<kbd>${esc(x)}</kbd>`).join("")}<span>${d}</span></div>`).join("");
+
+  let html;
+  if (S.mode === "course") {
+    html = `<div class="course view">
+      <div class="lessons">${L.lessons.map((n, i) => `<div class="lesson ${i === 0 ? "on" : ""}"><i>${i + 1}</i>${n}</div>`).join("")}</div>
+      <div class="course-main">${stage}<div class="fingerhint" id="fhint"></div><div class="kbd" id="kbd"></div><div class="hints">${hints}</div></div>
+    </div>`;
+  } else {
+    html = `<div class="view" style="display:flex;flex-direction:column;gap:16px">${stage}<div class="hints">${hints}</div><div class="source" id="source"></div></div>`;
+  }
+  $("#view").innerHTML = html;
+  if (S.mode === "course") buildKeyboard();
+  $("#stage").addEventListener("mousedown", e => { e.preventDefault(); focusInput(); });
+  $("#stage").addEventListener("click", focusInput);
+  const pm = phoneMode();
+  input.setAttribute("autocorrect", pm ? "on" : "off");
+  input.setAttribute("autocapitalize", pm ? "sentences" : "off");
+  input.setAttribute("autocomplete", pm ? "on" : "off");
+  input.setAttribute("spellcheck", pm ? "true" : "false");
+  reset();
+}
+
+function buildKeyboard() {
+  const rows = LAYOUT[S.lang];
+  const mods = [["", "⌫"], ["Tab", ""], ["Caps", "Enter"], ["Shift", "Shift"]];
+  const home = S.lang === "ru" ? ["а", "о"] : ["f", "j"];
+  let h = rows.map((r, ri) => {
+    const keys = [...r].map((ch, ci) => `<div class="key f${FINGERS[ri][ci]} ${home.includes(ch) ? "home" : ""}" data-k="${esc(ch)}">${esc(ch.toUpperCase())}</div>`).join("");
+    const [a, b] = mods[ri];
+    return `<div class="krow">${a ? `<div class="key mod">${a}</div>` : ""}${keys}${b ? `<div class="key mod">${b}</div>` : ""}</div>`;
+  }).join("");
+  h += `<div class="krow"><div class="key mod"></div><div class="key mod"></div><div class="key space" data-k=" "></div><div class="key mod"></div><div class="key mod"></div></div>`;
+  $("#kbd").innerHTML = h;
+}
+
+/* ---------- reset / targets ---------- */
+function reset() {
+  clearInterval(S.timer);
+  input.value = "";
+  Object.assign(S, { buf: "", pending: "", started: 0, keys: 0, errs: 0, done: false, samples: [] });
+  const L = t();
+  const src = $("#source");
+  if (S.mode === "code") {
+    S.target = SNIPPETS[S.snippet].code; S.tokens = tokenize(S.target);
+    const tab = $(".tabbar span:nth-child(2)"); if (tab) tab.textContent = SNIPPETS[S.snippet].file;
+    if (src) src.textContent = L.srcCode;
+  } else if (S.mode === "text") {
+    if (S.textKind === "lit") {
+      const arr = TEXTS[S.lang]; const it = arr[S.textIdx % arr.length];
+      S.target = it.t; if (src) src.innerHTML = `${L.src} <em>${it.src}</em>`;
+    } else {
+      S.target = makeWords(WORDS[S.lang], 40); if (src) src.textContent = L.srcWords;
+    }
+  } else {
+    S.target = makeWords(DRILL[S.lang], 18);
+  }
+  $("#result").classList.remove("on");
+  render(true);
+  updateStats();
+}
+
+/* ---------- rendering ---------- */
+function render(instant) {
+  const content = $("#content"); if (!content) return;
+  if (S.mode === "code") renderCode(content); else if (phoneMode()) renderPhone(content); else renderText(content);
+  // one persistent caret: re-attached after each redraw so it glides from where it was
+  if (!caretEl) { caretEl = document.createElement("div"); caretEl.className = "caret"; caretEl.id = "caret"; }
+  content.appendChild(caretEl);
+  requestAnimationFrame(() => placeCaret(instant));
+  if (S.mode === "course") highlightNext();
+}
+
+function renderCode(content) {
+  const tLines = S.target.split("\n");
+  const starts = []; { let p = 0; for (const l of tLines) { starts.push(p); p += l.length + 1; } }
+  const doc = S.buf + S.pending;
+  const dLines = doc.split("\n");
+  const bLines = S.buf.split("\n");
+  const cur = bLines.length - 1, col = bLines[cur].length;
+  const n = Math.max(tLines.length, dLines.length);
+  let h = "";
+  for (let k = 0; k < n; k++) {
+    const tl = tLines[k] ?? null, d = dLines[k] ?? "";
+    const typed = k < cur ? d.length : k === cur ? col : 0;
+    const len = Math.max(tl ? tl.length : 0, d.length);
+    let row = "";
+    // auto-inserted closers that are still ahead of the caret: never drawn over the sample,
+    // they trail faintly after the end of the line instead
+    const ghosts = k >= cur ? d.slice(typed) : "";
+    const span = Math.max(tl ? tl.length : 0, typed);
+    for (let j = 0; j < span; j++) {
+      const at = (k === cur && j === col) ? " at" : "";
+      const tc = tl && j < tl.length ? tl[j] : null;
+      if (j < typed) {
+        if (tc === null) row += `<span class="c extra${at}">${esc(d[j])}</span>`;
+        else if (d[j] === tc) { const k2 = S.tokens[starts[k] + j]; row += `<span class="c ok${k2 ? " k-" + k2 : ""}${at}">${esc(tc)}</span>`; }
+        else row += errSpan(d[j], tc, at);
+      } else {
+        row += `<span class="c todo${at}">${esc(tc ?? " ")}</span>`;
+      }
+    }
+    row += `<span class="eol${k === cur && col >= span ? " at" : ""}"> </span>`;
+    if (ghosts) row += `<span class="ghosts" title="auto">${[...ghosts].map(esc).join("")}</span>`;
+    const extraLine = tl === null;
+    h += `<div class="row${k === cur ? " cur" : ""}"><span class="num"${extraLine ? ' style="color:var(--err)"' : ""}>${k + 1}</span><span>${row}</span></div>`;
+  }
+  content.innerHTML = h;
+  const ln = $("#lnInfo"); if (ln) ln.textContent = `${t().line} ${cur + 1}/${tLines.length}`;
+}
+
+function renderText(content) {
+  const T = S.target, B = S.buf;
+  let h = "";
+  for (let i = 0; i < T.length; i++) {
+    const at = i === B.length ? " at" : "";
+    if (i < B.length) h += B[i] === T[i] ? `<span class="c ok${at}">${esc(T[i])}</span>` : errSpan(B[i], T[i], at);
+    else h += `<span class="c todo${at}">${esc(T[i])}</span>`;
+  }
+  content.innerHTML = h;
+}
+
+/* ---------- phone mode: read whole words from a real text field ---------- */
+const phoneMode = () => S.phone && S.mode === "text";
+function phoneState() {
+  const v = input.value.replace(/^\s+/, "");
+  const parts = v ? v.split(/\s+/) : [""];
+  return { tw: S.target.split(" "), done: parts.slice(0, parts.length - 1), cur: parts[parts.length - 1] };
+}
+function renderPhone(content) {
+  const { tw, done, cur } = phoneState();
+  let h = "";
+  tw.forEach((w, i) => {
+    if (i < done.length) {
+      if (done[i] === w) h += [...w].map(c => `<span class="c ok">${esc(c)}</span>`).join("");
+      // wrong word: keep the sample word in place, show what the keyboard actually produced above it
+      else h += [...w].map((c, j) => `<span class="c err"${j === 0 ? ` data-typed="${attr(done[i])}"` : ""}>${esc(c)}</span>`).join("");
+    } else if (i === done.length) {
+      for (let j = 0; j < w.length; j++) {
+        const at = j === cur.length ? " at" : "";
+        if (j < cur.length && cur[j] !== w[j]) { h += errSpan(cur[j], w[j], at); continue; }
+        h += `<span class="c ${j < cur.length ? "ok" : "todo"}${at}">${esc(w[j])}</span>`;
+      }
+      if (cur.length > w.length) h += [...cur.slice(w.length)].map(c => `<span class="c extra">${esc(c)}</span>`).join("");
+      if (cur.length >= w.length && i < tw.length - 1) { h += `<span class="c todo at"> </span>`; return; }
+    } else {
+      h += [...w].map(c => `<span class="c todo">${esc(c)}</span>`).join("");
+    }
+    if (i < tw.length - 1) h += `<span class="c ${i < done.length ? "ok" : "todo"}"> </span>`;
+  });
+  content.innerHTML = h;
+}
+function phoneInput() {
+  if (S.done) return;
+  if (input.value.trim()) start();
+  const { tw, done } = phoneState();
+  const counted = done.slice(0, tw.length);
+  S.keys = counted.length;
+  S.errs = counted.filter((w, i) => w !== tw[i]).length;
+  S.buf = input.value;
+  render(false); updateStats(); checkDone();
+}
+
+function placeCaret(instant) {
+  const content = $("#content"), caret = $("#caret"), vp = $("#vp"); if (!content || !caret) return;
+  const lh = parseFloat(getComputedStyle(vp).getPropertyValue("--lh")) || 34;
+  let at = content.querySelector(".at"), x, lineIdx;
+  if (S.mode === "code") {
+    lineIdx = S.buf.split("\n").length - 1;
+    x = at ? at.offsetLeft : 0;
+  } else {
+    const spans = content.querySelectorAll(".c"); const first = spans[0];
+    let right = false;
+    if (!at) { at = spans[spans.length - 1]; right = true; }
+    x = at.offsetLeft + (right ? at.offsetWidth : 0);
+    lineIdx = Math.round((at.offsetTop - first.offsetTop) / lh);
+  }
+  const ch = lh * 0.62;
+  caret.style.height = ch + "px";
+  if (instant) caret.style.transition = "none";
+  caret.style.transform = `translate(${x - 1}px, ${lineIdx * lh + (lh - ch) / 2}px)`;
+  if (instant) { caret.offsetWidth; caret.style.transition = ""; }
+  caret.classList.toggle("idle", !S.started);
+
+  // running window: shift once the cursor passes the middle row
+  const visible = S.mode === "code" ? 5 : 3;
+  const pivot = S.mode === "code" ? 2 : 1;
+  const total = S.mode === "code" ? content.querySelectorAll(".row").length : Math.round(content.scrollHeight / lh);
+  const off = Math.max(0, Math.min(lineIdx - pivot, total - visible));
+  content.style.transform = `translateY(${-off * lh}px)`;
+  const ft = vp.parentElement.querySelector(".fade.top"); ft.style.top = vp.offsetTop + "px"; ft.style.opacity = off > 0 ? 1 : 0;
+  vp.parentElement.querySelector(".fade.bot").style.opacity = off < total - visible ? 1 : 0;
+  if (S.mode === "code" && at) {
+    const pad = 60;
+    if (at.offsetLeft - vp.scrollLeft > vp.clientWidth - pad) vp.scrollLeft = at.offsetLeft - vp.clientWidth + pad * 2;
+    else if (at.offsetLeft - vp.scrollLeft < pad) vp.scrollLeft = Math.max(0, at.offsetLeft - pad * 2);
+  }
+}
+
+function highlightNext() {
+  const kb = $("#kbd"); if (!kb) return;
+  kb.querySelectorAll(".next").forEach(k => k.classList.remove("next"));
+  const ch = S.target[S.buf.length]; const L = t(); const fh = $("#fhint");
+  if (ch === undefined) { fh.innerHTML = ""; return; }
+  const key = kb.querySelector(`[data-k="${CSS.escape(ch.toLowerCase())}"]`);
+  if (key) key.classList.add("next");
+  if (ch === " ") fh.innerHTML = `${L.nextKey}: <b>${L.space}</b>`;
+  else {
+    const m = key && key.className.match(/f(\d)/);
+    fh.innerHTML = `${L.nextKey}: <b>${esc(ch.toUpperCase())}</b>${m ? ` — ${L.fingers[+m[1]]}` : ""}`;
+  }
+}
+function flashKey(ch) {
+  const kb = $("#kbd"); if (!kb || !ch) return;
+  const key = kb.querySelector(`[data-k="${CSS.escape(ch.toLowerCase())}"]`); if (!key) return;
+  key.classList.add("press"); setTimeout(() => key.classList.remove("press"), 120);
+}
+
+/* ---------- stats ---------- */
+function correctChars() {
+  if (phoneMode()) {
+    const { tw, done, cur } = phoneState(); let c = 0;
+    done.forEach((w, i) => { if (w === tw[i]) c += w.length + 1; });
+    const w = tw[done.length] || ""; for (let j = 0; j < cur.length && j < w.length; j++) if (cur[j] === w[j]) c++;
+    return c;
+  }
+  if (S.mode !== "code") { let c = 0; for (let i = 0; i < S.buf.length; i++) if (S.buf[i] === S.target[i]) c++; return c; }
+  const tl = S.target.split("\n"), bl = S.buf.split("\n"); let c = 0;
+  bl.forEach((l, k) => { const x = tl[k] || ""; for (let j = 0; j < l.length; j++) if (l[j] === x[j]) c++; if (k < bl.length - 1) c++; });
+  return c;
+}
+function speedNow() {
+  if (!S.started) return 0;
+  const min = Math.max((Date.now() - S.started) / 60000, 1 / 60);
+  const c = correctChars();
+  return Math.round(S.lang === "ru" ? c / min : c / 5 / min);
+}
+function updateStats() {
+  const sp = $("#st-speed"); if (!sp) return;
+  sp.textContent = speedNow();
+  $("#st-acc").textContent = (S.keys ? Math.max(0, Math.round((S.keys - S.errs) / S.keys * 100)) : 100) + "%";
+  const sec = S.started ? Math.floor(((S.done ? S.doneAt : Date.now()) - S.started) / 1000) : 0;
+  $("#st-time").textContent = `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`;
+  $("#st-prog").style.width = Math.min(100, correctChars() / S.target.length * 100) + "%";
+}
+function start() {
+  if (S.started) return;
+  S.started = Date.now();
+  S.timer = setInterval(() => { updateStats(); if (!S.done && (Date.now() - S.started) > 900) S.samples.push(speedNow()); }, 1000);
+}
+
+/* ---------- finishing ---------- */
+const norm = s => s.split("\n").map(l => l.replace(/\s+$/, "")).join("\n").replace(/\n+$/, "");
+function checkDone() {
+  if (phoneMode()) {
+    const { tw, done, cur } = phoneState();
+    if (!(done.length >= tw.length || (done.length === tw.length - 1 && cur === tw[tw.length - 1]))) return;
+    S.done = true; S.doneAt = Date.now(); clearInterval(S.timer); input.blur();
+    S.samples.push(speedNow()); updateStats(); showResult(); return;
+  }
+  const doc = S.mode === "code" ? norm(S.buf + S.pending) : S.buf;
+  const tgt = S.mode === "code" ? norm(S.target) : S.target;
+  if (doc !== tgt) return;
+  S.done = true; S.doneAt = Date.now(); clearInterval(S.timer);
+  S.samples.push(speedNow());
+  updateStats(); showResult();
+}
+function showResult() {
+  const L = t(), sp = speedNow();
+  const acc = S.keys ? Math.round((S.keys - S.errs) / S.keys * 100) : 100;
+  const sec = Math.round((S.doneAt - S.started) / 1000);
+  const pts = S.samples.length > 1 ? S.samples : [0, sp];
+  const max = Math.max(...pts, 1), w = 220, hgt = 56;
+  const poly = pts.map((v, i) => `${(i / (pts.length - 1) * w).toFixed(1)},${(hgt - v / max * (hgt - 6) - 3).toFixed(1)}`).join(" ");
+  $("#result").innerHTML = `<div class="card">
+    <div class="big">${sp}<small>${L.unit}</small></div>
+    <div class="side">
+      <div class="row2"><div><b>${acc}%</b><span>${L.acc}</span></div><div><b>${sec}s</b><span>${L.time}</span></div><div><b>${S.errs}</b><span>${L.errors}</span></div></div>
+      <svg viewBox="0 0 ${w} ${hgt}" aria-hidden="true"><polyline points="${poly}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><button class="ghostbtn" id="again">${L.again} · Enter</button></div>
+    </div></div>`;
+  $("#again").onclick = () => { reset(); focusInput(); };
+  requestAnimationFrame(() => $("#result").classList.add("on"));
+}
+
+/* ---------- editing (code) ---------- */
+const PAIRS = { "(": ")", "[": "]", "{": "}" };
+const CLOSERS = new Set([")", "]", "}"]);
+const curLine = () => S.buf.slice(S.buf.lastIndexOf("\n") + 1);
+function countKey(pos) {
+  // pos = [line, col] of the char just written; compare to target
+  S.keys++;
+  const tl = S.target.split("\n")[pos[0]] ?? null;
+  const d = (S.buf).split("\n")[pos[0]];
+  if (tl === null || d[pos[1]] !== tl[pos[1]]) S.errs++;
+}
+function bufPos() { const l = S.buf.split("\n"); return [l.length - 1, l[l.length - 1].length - 1]; }
+
+function codeType(ch) {
+  if ((CLOSERS.has(ch) || ch === '"' || ch === "'") && S.pending[0] === ch) {
+    S.buf += ch; S.pending = S.pending.slice(1);
+  } else if (PAIRS[ch]) {
+    S.buf += ch; S.pending = PAIRS[ch] + S.pending;
+  } else if (ch === '"' || ch === "'") {
+    const line = curLine(); const prev = line.slice(-1);
+    const insideString = (line.split(ch).length - 1) % 2 === 1;
+    S.buf += ch;
+    if (!/\w/.test(prev) && !insideString) S.pending = ch + S.pending;
+  } else {
+    S.buf += ch;
+  }
+  countKey(bufPos());
+}
+function indentFor(line) {
+  const ws = line.match(/^\s*/)[0];
+  return line.trimEnd().endsWith(":") ? ws + "    " : ws;
+}
+function codeEnter() {
+  const line = curLine();
+  let indent;
+  if (line.length && !line.trim()) { S.buf = S.buf.slice(0, S.buf.length - line.length); indent = line; }
+  else indent = indentFor(line);
+  S.buf += "\n" + indent;
+  S.keys++;
+  const ln = S.buf.split("\n").length - 2; const tl = S.target.split("\n");
+  if (ln >= tl.length - 1) S.errs++;
+}
+function commitPendingLine() {
+  const nl = S.pending.indexOf("\n");
+  const part = nl === -1 ? S.pending : S.pending.slice(0, nl);
+  S.buf += part; S.pending = S.pending.slice(part.length);
+}
+function codeBackspace(word) {
+  if (!S.buf) return;
+  const line = curLine();
+  if (word) { const m = S.buf.match(/(\w+|[ \t]+|\n|[^\w\s])$/); S.buf = S.buf.slice(0, S.buf.length - (m ? m[0].length : 1)); return; }
+  if (line.length && !line.trim()) { const cut = line.length % 4 || 4; S.buf = S.buf.slice(0, -cut); return; }
+  const last = S.buf.slice(-1);
+  if ((PAIRS[last] && S.pending[0] === PAIRS[last]) || ((last === '"' || last === "'") && S.pending[0] === last)) S.pending = S.pending.slice(1);
+  S.buf = S.buf.slice(0, -1);
+}
+
+/* ---------- editing (text / course) ---------- */
+function textType(ch) {
+  if (S.buf.length >= S.target.length) return;
+  S.buf += ch; S.keys++;
+  if (ch !== S.target[S.buf.length - 1]) S.errs++;
+  if (S.lang === "ru" && /[a-z]/i.test(ch) && /[а-яё]/i.test(S.target[S.buf.length - 1] || "")) toast(t().layoutToast);
+  if (S.lang === "en" && /[а-яё]/i.test(ch)) toast(t().layoutToast);
+  flashKey(ch);
+}
+function textBackspace(word) {
+  if (!S.buf) return;
+  if (word) { S.buf = S.buf.replace(/(\S+\s*|\s+)$/, ""); return; }
+  S.buf = S.buf.slice(0, -1);
+}
+
+/* ---------- keyboard ---------- */
+input.addEventListener("keydown", e => {
+  if (e.key === "Escape") { e.preventDefault(); reset(); return; }
+  if (S.done) { if (e.key === "Enter") { e.preventDefault(); reset(); } return; }
+  if (phoneMode()) { if (e.key === "Enter") e.preventDefault(); return; }
+  const code = S.mode === "code";
+  const ctrl = e.ctrlKey || e.metaKey;
+  if (e.key === "Tab") { if (code) { e.preventDefault(); start(); const n = 4 - (curLine().length % 4); S.buf += " ".repeat(n); S.keys++; } else return; }
+  else if (e.key === "Enter") {
+    e.preventDefault(); if (!code) return; start();
+    if (ctrl) commitPendingLine();
+    codeEnter();
+  }
+  else if (e.key === "End" && code) { e.preventDefault(); commitPendingLine(); }
+  else if (e.key === "Backspace") { e.preventDefault(); code ? codeBackspace(ctrl) : textBackspace(ctrl); }
+  else if (e.key.length === 1 && !ctrl && !e.altKey) { e.preventDefault(); start(); code ? codeType(e.key) : textType(e.key); }
+  else if (e.key.startsWith("Arrow")) { e.preventDefault(); return; }
+  else return;
+  render(false); updateStats(); checkDone();
+});
+// fallback for phones / IME / synthetic input where keydown carries no printable key
+input.addEventListener("input", e => {
+  if (phoneMode()) { phoneInput(); return; }
+  const data = e.data || input.value; input.value = "";
+  if (!data || S.done) return;
+  start();
+  for (const ch of data) { S.mode === "code" ? codeType(ch) : textType(ch); }
+  render(false); updateStats(); checkDone();
+});
+input.addEventListener("blur",() => { const v = $("#veil"); if (v) v.classList.add("on"); });
+input.addEventListener("focus", () => { const v = $("#veil"); if (v) v.classList.remove("on"); });
+function focusInput() { input.focus({ preventScroll: true }); const v = $("#veil"); if (v) v.classList.toggle("on", document.activeElement !== input); }
+document.addEventListener("keydown", e => {
+  if (document.activeElement === input) return;
+  if (e.target.closest && e.target.closest("button") && (e.key === "Enter" || e.key === " ")) return;
+  if (e.key.length === 1 || e.key === "Enter" || e.key === "Tab" || e.key === "Backspace") { focusInput(); }
+});
+
+/* ---------- top controls ---------- */
+$("#langSeg").querySelectorAll("button").forEach(b => b.onclick = () => { S.lang = b.dataset.v; S.textIdx = 0; build(); focusInput(); });
+$("#modeSeg").querySelectorAll("button").forEach(b => b.onclick = () => { S.mode = b.dataset.v; build(); focusInput(); });
+window.addEventListener("resize", () => { placePill($("#langSeg")); placePill($("#modeSeg")); const k = $("#kindSeg"); if (k) placePill(k); placeCaret(true); });
+
+build();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { placePill($("#langSeg")); placePill($("#modeSeg")); const k = $("#kindSeg"); if (k) placePill(k); placeCaret(true); });
+focusInput();
+})();
+</script>

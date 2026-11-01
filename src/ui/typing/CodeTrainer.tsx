@@ -27,6 +27,7 @@ function pickRandom(list: Snippet[], except?: string): Snippet {
 
 export function CodeTrainer({ lang, d }: { lang: Lang; d: Dict }) {
   const coarse = useCoarsePointer();
+  const [prefs, setPrefs] = usePrefs();
   const [snippets, setSnippets] = useState<Snippet[] | null>(null);
   const [snippet, setSnippet] = useState<Snippet | null>(null);
   const [attempt, setAttempt] = useState(0);
@@ -61,12 +62,15 @@ export function CodeTrainer({ lang, d }: { lang: Lang; d: Dict }) {
             <i aria-hidden="true" />{snippet.path}
           </a>
         ) : <span className={styles.file}>{d.loading}</span>}
+        <div className={styles.controls}>
+        <KeyButton pressed={prefs.keyboard} onClick={() => setPrefs({ keyboard: !prefs.keyboard })}>{d.keyboardToggle}</KeyButton>
         <KeyButton
           onClick={() => { if (snippets && snippet) { setSnippet(pickRandom(snippets, snippet.id)); setAttempt((a) => a + 1); } }}
           disabled={!snippets}
         >
           {d.anotherSnippet} ↻
         </KeyButton>
+        </div>
       </div>
       {snippet
         ? <CodeSession key={`${snippet.id}:${attempt}`} code={snippet.code} lang={lang} d={d} onRestart={() => setAttempt((a) => a + 1)} />
@@ -96,7 +100,11 @@ function CodeSession({ code, lang, d, onRestart }: { code: string; lang: Lang; d
   const capture = useCaptureInput({ onKey: session.onKey, onRestart, done: session.done, editor: true });
   const [prefs] = usePrefs();
   const { focus } = capture;
-  useEffect(() => { focus(); }, [focus]);
+  // take focus on start, unless the visitor has already put it somewhere else
+  useEffect(() => {
+    const a = document.activeElement;
+    if (!a || a === document.body) focus();
+  }, [focus]);
 
   const progress = Math.min(1, session.state.buf.length / Math.max(1, code.length));
   return (

@@ -1,6 +1,10 @@
 export type Lang = "ru" | "en";
 export const LANGS: Lang[] = ["ru", "en"];
 
+export const LAST_PATH_COOKIE = "ritm.last";
+const LAST_PATH = /^\/(ru|en)\/(code|text)$/;
+export const isRememberedPath = (v: string | undefined): v is string => !!v && LAST_PATH.test(v);
+
 export const isLang = (v: string): v is Lang => (LANGS as string[]).includes(v);
 
 /** Pick the site language from an Accept-Language header. */

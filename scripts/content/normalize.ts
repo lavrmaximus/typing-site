@@ -86,9 +86,19 @@ export function gutenbergParagraphs(txt: string): string[] {
   const end = txt.search(/\*\*\* ?END OF (THE|THIS) PROJECT GUTENBERG/i);
   let body = txt.slice(start === -1 ? 0 : start, end === -1 ? undefined : end);
   if (start !== -1) body = body.slice(body.indexOf("\n") + 1);
-  return body
+  const paras = body
     .replace(/\r/g, "")
     .split(/\n\s*\n/)
     .map((p) => p.replace(/\s*\n\s*/g, " ").trim())
     .filter(Boolean);
+  // skip prefaces and contents: the story starts at the first standalone "Chapter I" heading
+  const first = paras.findIndex((p) => isFirstHeading(p.replace(/[[\]]/g, "").trim()));
+  return (first >= 0 ? paras.slice(first + 1) : paras).filter((p) => !CHAPTER_REF.test(p) && !isContents(p));
 }
+
+const FIRST_CHAPTER = /^(chapter|book)\s+(i|1|one|the first)\b[.:]?(\s.{0,60})?$/i;
+const FIRST_STORY = /^I\.\s+[A-Z][A-Z'’ -]{3,60}$/; // "I. A SCANDAL IN BOHEMIA"
+const isFirstHeading = (p: string) => (FIRST_CHAPTER.test(p) && !/chapter/i.test(p.slice(8))) || FIRST_STORY.test(p);
+const CHAPTER_REF = /\bCHAPTER [IVXLC]+\b/;
+/** A run of three or more "IV. Title" items is a table of contents. */
+const isContents = (p: string) => (p.match(/(^|\s)[IVXLC]+\.\s+[A-Z]/g) ?? []).length >= 3;

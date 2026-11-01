@@ -125,3 +125,17 @@ test("brackets inside strings and comments are not auto-closed", () => {
   expect(type(createCodeState(""), 'x = "(').pending).toBe('"');
   expect(type(createCodeState(""), "# see (").pending).toBe("");
 });
+
+test("ctrl+backspace also removes the auto-pairs of deleted openers", () => {
+  let s = type(createCodeState("f(x)"), "f(");
+  s = applyCodeKey(s, { kind: "backspace", word: true });
+  s = applyCodeKey(s, { kind: "backspace", word: true });
+  expect([s.buf, s.pending]).toEqual(["", ""]);
+  s = type(createCodeState("f(x)"), "f(");
+  s = applyCodeKey(s, { kind: "backspace", word: true });
+  s = type(s, "(x)");
+  expect(isCodeComplete(s)).toBe(true);
+  s = type(createCodeState('print("a")'), 'print("');
+  s = applyCodeKey(s, { kind: "backspace", word: true });
+  expect(s.pending).toBe(")");
+});

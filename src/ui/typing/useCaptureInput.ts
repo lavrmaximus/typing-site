@@ -38,6 +38,9 @@ export function useCaptureInput({ onKey, onRestart, done, editor }: Handlers) {
 
   const handle = (e: KeyboardEvent | ReactKeyboardEvent) => {
     const { onKey, onRestart, done, editor } = h.current;
+    // keys that belong to an IME composition are not ours; the committed text arrives via input
+    const native = "nativeEvent" in e ? e.nativeEvent : e;
+    if (native.isComposing || native.keyCode === 229) return;
     if (e.key === "Escape") { e.preventDefault(); onRestart(); return; }
     if (done) {
       if (e.key === "Enter") { e.preventDefault(); onRestart(); }
@@ -67,16 +70,22 @@ export function useCaptureInput({ onKey, onRestart, done, editor }: Handlers) {
     return () => document.removeEventListener("keydown", onDocKey);
   }, []);
 
+  /** Feed whatever text sits in the field to the engine, then empty it. */
+  const consume = (el: HTMLTextAreaElement) => {
+    const text = el.value;
+    el.value = "";
+    if (h.current.done) return;
+    for (const ch of text) if (ch !== "\n" && ch !== "\r") h.current.onKey({ kind: "char", ch });
+  };
+
   const props = {
     ref,
     onKeyDown: handle,
     onInput: (e: React.FormEvent<HTMLTextAreaElement>) => {
-      const el = e.currentTarget;
-      const text = el.value;
-      el.value = "";
-      if (h.current.done) return;
-      for (const ch of text) if (ch !== "\n" && ch !== "\r") h.current.onKey({ kind: "char", ch });
+      if ((e.nativeEvent as InputEvent).isComposing) return; // wait for the composition to finish
+      consume(e.currentTarget);
     },
+    onCompositionEnd: (e: React.CompositionEvent<HTMLTextAreaElement>) => consume(e.currentTarget),
     onFocus: () => setFocused(true),
     onBlur: () => setFocused(false),
     autoComplete: "off",

@@ -103,13 +103,14 @@ export function TextTrainer({ lang, d }: { lang: Lang; d: Dict }) {
           ))}
         </div>
         <div className={styles.controls}>
+          {!phone && <KeyButton pressed={prefs.keyboard} onClick={() => setPrefs({ keyboard: !prefs.keyboard })}>{d.keyboardToggle}</KeyButton>}
           <KeyButton pressed={phone} onClick={() => setPrefs({ phone: !phone })}>{d.phoneInput}</KeyButton>
           <KeyButton onClick={() => content && next(content, prefs.textKind, prefs.wordCount, target?.passage?.id)} disabled={!content}>{d.anotherText} ↻</KeyButton>
         </div>
       </div>
       {target ? (
         phone
-          ? <PhoneSession key={`p:${attempt}:${target.text}`} text={target.text} lang={lang} d={d} onRestart={() => setAttempt((a) => a + 1)} />
+          ? <PhoneSession key={`p:${attempt}:${target.text}`} text={target.text} lang={lang} d={d} capitalize={prefs.textKind === "lit"} onRestart={() => setAttempt((a) => a + 1)} />
           : <KeySession key={`k:${attempt}:${target.text}`} text={target.text} lang={lang} d={d} keyboard={prefs.keyboard} onRestart={() => setAttempt((a) => a + 1)} />
       ) : (
         <Device glowCpm={0} screen={<div className={`${styles.viewport} ${styles.text}`} />} />
@@ -154,7 +155,11 @@ function KeySession({ text, lang, d, keyboard, onRestart }: { text: string; lang
   };
   const capture = useCaptureInput({ onKey, onRestart, done: session.done, editor: false });
   const { focus } = capture;
-  useEffect(() => { focus(); }, [focus]);
+  // take focus on start, unless the visitor has already put it somewhere else
+  useEffect(() => {
+    const a = document.activeElement;
+    if (!a || a === document.body) focus();
+  }, [focus]);
   const marks = useMemo(() => textMarks(session.state), [session.state]);
 
   return (
@@ -186,7 +191,14 @@ function KeySession({ text, lang, d, keyboard, onRestart }: { text: string; lang
 
 interface PhoneState { target: string; field: string }
 
-function PhoneSession({ text, lang, d, onRestart }: { text: string; lang: Lang; d: Dict; onRestart: () => void }) {
+/** The invisible field must always be typed at its end: a tap elsewhere would splice words mid-text. */
+const caretToEnd = (el: HTMLTextAreaElement | null) => {
+  if (!el) return;
+  const n = el.value.length;
+  if (el.selectionStart !== n || el.selectionEnd !== n) el.setSelectionRange(n, n);
+};
+
+function PhoneSession({ text, lang, d, capitalize, onRestart }: { text: string; lang: Lang; d: Dict; capitalize: boolean; onRestart: () => void }) {
   const engine = useMemo<Engine<PhoneState>>(() => ({
     create: () => ({ target: text, field: "" }),
     apply: (s) => s,
@@ -199,6 +211,11 @@ function PhoneSession({ text, lang, d, onRestart }: { text: string; lang: Lang; 
   const field = useRef<HTMLTextAreaElement>(null);
   const view = useMemo(() => phoneView(text, session.state.field), [text, session.state.field]);
   useEffect(() => { if (session.done) field.current?.blur(); }, [session.done]);
+  useEffect(() => {
+    const onSel = () => { if (document.activeElement === field.current) caretToEnd(field.current); };
+    document.addEventListener("selectionchange", onSel);
+    return () => document.removeEventListener("selectionchange", onSel);
+  }, []);
 
   return (
     <Device
@@ -213,7 +230,10 @@ function PhoneSession({ text, lang, d, onRestart }: { text: string; lang: Lang; 
               data-testid="phone-input"
               aria-label={d.phoneInput}
               autoCorrect="on"
-              autoCapitalize="sentences"
+              autoCapitalize={capitalize ? "sentences" : "none"}
+              onFocus={(e) => caretToEnd(e.currentTarget)}
+              onPointerUp={(e) => { const el = e.currentTarget; requestAnimationFrame(() => caretToEnd(el)); }}
+              onSelect={(e) => caretToEnd(e.currentTarget)}
               autoComplete="on"
               spellCheck
               onInput={(e) => {

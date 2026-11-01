@@ -2,7 +2,10 @@ import { test, expect } from "@playwright/test";
 
 test("keyboard focus on navigation keycaps is visible", async ({ page }) => {
   await page.goto("/ru/text");
+  await page.getByTestId("stage").waitFor();
   await page.getByRole("link", { name: "Код", exact: true }).focus();
+  await page.waitForTimeout(300);
+  await expect(page.getByRole("link", { name: "Код", exact: true })).toBeFocused();
   const outline = await page.getByRole("link", { name: "Код", exact: true }).evaluate((el) => getComputedStyle(el).outlineStyle);
   expect(outline).not.toBe("none");
 });

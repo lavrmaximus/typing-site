@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { LANGS, getDict, type Lang } from "@/i18n/dict";
 import { KeyLink } from "./KeyCap";
+import { RememberPath } from "./RememberPath";
 import { ThemeToggle } from "./ThemeToggle";
 import styles from "./Shell.module.css";
 
@@ -10,6 +11,7 @@ export function Shell({ lang, mode, children }: { lang: Lang; mode: Mode; childr
   const d = getDict(lang);
   return (
     <div className={styles.page}>
+      <RememberPath path={`/${lang}/${mode}`} />
       <header className={styles.top}>
         <a className={styles.logo} href={`/${lang}/code`}>
           <i aria-hidden="true" />

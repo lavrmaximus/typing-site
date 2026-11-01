@@ -140,8 +140,12 @@ function backspace(s: CodeState, word: boolean): CodeState {
   const { buf, pending } = s;
   if (!buf) return s;
   if (word) {
+    // delete char by char so every removed opener takes its auto-closer with it
     const m = buf.match(/(\w+|[ \t]+|\n|[^\w\s])$/);
-    return { ...s, buf: buf.slice(0, buf.length - (m ? m[0].length : 1)) };
+    const stop = buf.length - (m ? m[0].length : 1);
+    let cur = s;
+    while (cur.buf.length > stop) cur = backspace(cur, false);
+    return cur;
   }
   const line = lastLine(buf);
   if (line.length && !line.trim()) {

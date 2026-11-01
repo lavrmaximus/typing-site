@@ -49,3 +49,31 @@ test("gutenberg body is cut between markers and lines are unwrapped", () => {
   const txt = "Header\n*** START OF THE PROJECT GUTENBERG EBOOK X ***\n\nOne line\nwrapped here.\n\nSecond para.\n*** END OF THE PROJECT GUTENBERG EBOOK X ***\nLicense";
   expect(gutenbergParagraphs(txt)).toEqual(["One line wrapped here.", "Second para."]);
 });
+
+test("gutenberg front matter and tables of contents are skipped", () => {
+  const txt = [
+    "*** START OF THE PROJECT GUTENBERG EBOOK X ***",
+    "",
+    "PREFACE.",
+    "",
+    "Walt Whitman has somewhere a fine and just distinction between loving by allowance and loving with personal love.",
+    "",
+    "Contents",
+    "",
+    "CHAPTER I. Down the Rabbit-Hole CHAPTER II. The Pool of Tears",
+    "",
+    "CHAPTER I.",
+    "",
+    "Real story text starts here.",
+    "",
+    "*** END OF THE PROJECT GUTENBERG EBOOK X ***",
+  ].join("\n");
+  expect(gutenbergParagraphs(txt)).toEqual(["Real story text starts here."]);
+});
+
+test("other first-chapter heading styles and roman-numeral contents", () => {
+  const book = (heading: string) =>
+    ["*** START OF THE PROJECT GUTENBERG EBOOK X ***", "Preface text that should go.", "Contents", "I. A Scandal in Bohemia II. The Red-Headed League III. A Case of Identity", heading, "Story.", "*** END OF THE PROJECT GUTENBERG EBOOK X ***"].join("\n\n");
+  expect(gutenbergParagraphs(book("Chapter I.]"))).toEqual(["Story."]);
+  expect(gutenbergParagraphs(book("I. A SCANDAL IN BOHEMIA"))).toEqual(["Story."]);
+});

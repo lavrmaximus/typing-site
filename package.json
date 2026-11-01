@@ -1,0 +1,33 @@
+{
+  "name": "ritm-typing",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:e2e": "next build && playwright test",
+    "content": "npm run content:snippets && npm run content:texts && npm run content:words",
+    "content:snippets": "python3 scripts/content/extract_snippets.py",
+    "content:texts": "tsx scripts/content/build-texts.ts",
+    "content:words": "tsx scripts/content/build-words.ts"
+  },
+  "dependencies": {
+    "next": "16.4.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.3",
+    "tsx": "^4.23.15",
+    "typescript": "^5",
+    "vitest": "^3.2.7"
+  }
+}

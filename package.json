@@ -10,9 +10,9 @@
     "test": "vitest run",
     "test:e2e": "next build && playwright test",
     "content": "npm run content:snippets && npm run content:texts && npm run content:words",
-    "content:snippets": "python3 scripts/content/extract_snippets.py",
-    "content:texts": "tsx scripts/content/build-texts.ts",
-    "content:words": "tsx scripts/content/build-words.ts"
+    "content:snippets": "python3 scripts/content/extract_snippets.py && tsx scripts/content/build-snippets.ts",
+    "content:texts": "NODE_USE_ENV_PROXY=1 tsx scripts/content/build-texts.ts",
+    "content:words": "NODE_USE_ENV_PROXY=1 tsx scripts/content/build-words.ts"
   },
   "dependencies": {
     "next": "16.4.3",

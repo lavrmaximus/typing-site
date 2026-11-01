@@ -10,25 +10,6 @@ export function type(s: CodeState, text: string): CodeState {
   return s;
 }
 
-/** Type a program the way a person in an editor would: rely on auto-indent,
- * Backspace down to the wanted indent, type the stripped line, press Enter. */
-export function typeLikeHuman(s: CodeState, src: string): CodeState {
-  const lines = src.split("\n");
-  lines.forEach((line, i) => {
-    const want = line.match(/^ */)![0].length;
-    if (line.trim()) {
-      let cur = s.buf.slice(s.buf.lastIndexOf("\n") + 1).length;
-      while (cur > want) {
-        s = applyCodeKey(s, { kind: "backspace", word: false });
-        cur = s.buf.slice(s.buf.lastIndexOf("\n") + 1).length;
-      }
-      s = type(s, line.trim());
-    }
-    if (i < lines.length - 1) s = applyCodeKey(s, { kind: "enter", ctrl: false });
-  });
-  return s;
-}
-
 export const PROTOTYPE_SNIPPETS = [
   `def binary_search(items: list[int], target: int) -> int:
     """Return index of target in sorted items, or -1."""

@@ -1,6 +1,7 @@
 import { expect, test } from "vitest";
 import { applyCodeKey, codeCursor, createCodeState, isCodeComplete } from "./code";
-import { PROTOTYPE_SNIPPETS, type, typeLikeHuman } from "./test-utils";
+import { PROTOTYPE_SNIPPETS, type } from "./test-utils";
+import { typeLikeHuman } from "./simulate";
 
 const BS = { kind: "backspace", word: false } as const;
 
@@ -101,4 +102,26 @@ test("whole prototype snippets complete with zero errors", () => {
 
 test("incomplete is not complete", () => {
   expect(isCodeComplete(type(createCodeState("ab"), "a"))).toBe(false);
+});
+
+test("other quote inside a string is not paired", () => {
+  const s = type(createCodeState(""), 'x = "say \'');
+  expect(s.pending).toBe('"');
+});
+
+test("quotes inside comments are not paired", () => {
+  const s = type(createCodeState(""), "# '");
+  expect(s.pending).toBe("");
+});
+
+test("human typing handles deeper continuation indent", () => {
+  const src = "x = f(\n    1,\n)";
+  const s = typeLikeHuman(createCodeState(src), src);
+  expect(isCodeComplete(s)).toBe(true);
+  expect(s.errors).toBe(0);
+});
+
+test("brackets inside strings and comments are not auto-closed", () => {
+  expect(type(createCodeState(""), 'x = "(').pending).toBe('"');
+  expect(type(createCodeState(""), "# see (").pending).toBe("");
 });

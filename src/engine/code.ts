@@ -67,6 +67,24 @@ function skipOptionalSpaces(s: CodeState, ch: string): CodeState {
   return { ...s, buf: s.buf + " ".repeat(end - col) };
 }
 
+/** Is the end of this (partial) line inside a string literal or a comment? */
+function lineContext(line: string): { inString: boolean; inComment: boolean } {
+  let open: string | null = null;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (open) {
+      if (c === "\\") { i++; continue; }
+      if (line.startsWith(open, i)) { i += open.length - 1; open = null; }
+    } else if (c === "#") {
+      return { inString: false, inComment: true };
+    } else if (QUOTES.has(c)) {
+      open = line.startsWith(c.repeat(3), i) ? c.repeat(3) : c;
+      i += open.length - 1;
+    }
+  }
+  return { inString: open !== null, inComment: false };
+}
+
 function typeChar(s: CodeState, ch: string): CodeState {
   s = skipOptionalSpaces(s, ch);
   let { buf, pending } = s;
@@ -74,14 +92,15 @@ function typeChar(s: CodeState, ch: string): CodeState {
     buf += ch;
     pending = pending.slice(1);
   } else if (PAIRS[ch]) {
+    const ctx = lineContext(lastLine(buf));
     buf += ch;
-    pending = PAIRS[ch] + pending;
+    if (!ctx.inString && !ctx.inComment) pending = PAIRS[ch] + pending;
   } else if (QUOTES.has(ch)) {
     const line = lastLine(buf);
-    const insideString = (line.split(ch).length - 1) % 2 === 1;
+    const ctx = lineContext(line);
     const afterWord = /\w/.test(line.slice(-1));
     buf += ch;
-    if (!insideString && !afterWord) pending = ch + pending;
+    if (!ctx.inString && !ctx.inComment && !afterWord) pending = ch + pending;
   } else {
     buf += ch;
   }

@@ -1,7 +1,8 @@
 import { expect, test } from "vitest";
 import { codeView, createCodeState, isCodeComplete } from "./code";
 import { tokenizePython } from "./python-tokens";
-import { type, typeLikeHuman } from "./test-utils";
+import { type } from "./test-utils";
+import { typeLikeHuman } from "./simulate";
 
 test("skipping optional spaces is not an error", () => {
   const s = type(createCodeState("x = 1"), "x=1");

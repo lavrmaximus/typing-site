@@ -1,0 +1,102 @@
+/* shared typing-window styles */
+.viewport { position: relative; overflow: hidden; }
+.code { --lh: 32px; height: calc(var(--lh) * 5 + 28px); padding: 14px 0; overflow-x: auto; scrollbar-width: none; }
+.code::-webkit-scrollbar { display: none; }
+.text { --lh: 46px; height: calc(var(--lh) * 3 + 36px); padding: 18px 24px; }
+.content {
+  position: relative;
+  transition: transform 0.5s var(--ease);
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+  will-change: transform;
+}
+.code .content { font: 400 15.5px/var(--lh) var(--font-code); white-space: pre; min-width: max-content; padding-right: 32px; }
+.text .content { font: 400 23px/var(--lh) var(--font-code); white-space: pre-wrap; overflow-wrap: anywhere; letter-spacing: -0.01em; }
+/* after the font shorthands above, which would reset these */
+.code .content, .text .content { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+.row { display: flex; height: var(--lh); }
+.num { flex: none; width: 52px; padding-right: 18px; text-align: right; color: var(--num-col); font-size: 12px; user-select: none; transition: color 0.3s; }
+.row[data-current] .num { color: var(--acc); }
+.row[data-extra] .num { color: var(--err); }
+.ch { position: relative; transition: color 0.12s; }
+.ch[data-s="todo"] { color: var(--todo); }
+.ch[data-s="ok"] { color: var(--scr-ink); }
+.ch[data-s="ok"][data-t="kw"] { color: var(--s-kw); }
+.ch[data-s="ok"][data-t="str"] { color: var(--s-str); }
+.ch[data-s="ok"][data-t="num"] { color: var(--s-num); }
+.ch[data-s="ok"][data-t="fn"] { color: var(--s-fn); }
+.ch[data-s="ok"][data-t="bi"] { color: var(--s-bi); }
+.ch[data-s="ok"][data-t="com"] { color: var(--s-com); font-style: italic; }
+.ch[data-s="err"] { color: var(--err); background: var(--err-bg); border-radius: 3px; }
+.ch[data-s="extra"] { color: var(--err); text-decoration: line-through; opacity: 0.8; }
+.ch[data-exp]::after {
+  content: attr(data-exp);
+  position: absolute; left: 50%; top: 86%; transform: translateX(-50%);
+  font-size: 0.62em; line-height: 1; color: var(--scr-ink); opacity: 0.7; pointer-events: none;
+  animation: hint 0.25s var(--ease);
+}
+.ch[data-typed]::before {
+  content: attr(data-typed);
+  position: absolute; left: 0; bottom: 92%;
+  font-size: 0.5em; line-height: 1; color: var(--err); white-space: nowrap; pointer-events: none;
+  text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--err) 50%, transparent);
+  animation: hint 0.25s var(--ease);
+}
+@keyframes hint { from { opacity: 0; } }
+.ghosts { margin-left: 1.2ch; color: var(--acc-text); opacity: 0.45; font-size: 0.85em; border-bottom: 1px dashed currentColor; }
+.caret {
+  position: absolute; left: 0; top: 0; width: 9px; border-radius: 2px;
+  background: var(--acc); opacity: 0.85; box-shadow: 0 0 14px var(--acc);
+  transition: transform 0.11s var(--ease), background-color 0.6s, box-shadow 0.6s;
+  pointer-events: none;
+}
+.text .caret { width: 3px; }
+.caret[data-idle] { animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.fade { position: absolute; left: 0; right: 0; height: 26px; pointer-events: none; z-index: 2; transition: opacity 0.3s; }
+.fadeTop { top: 0; background: linear-gradient(var(--screen), transparent); }
+.fadeBot { bottom: 0; background: linear-gradient(transparent, var(--screen)); }
+
+.veil {
+  position: absolute; inset: 0; z-index: 4; display: flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--screen) 55%, transparent); backdrop-filter: blur(3px);
+  color: var(--scr-ink); font-size: 14px; border: 0; width: 100%; cursor: text;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s var(--ease);
+}
+.veil[data-on] { opacity: 1; pointer-events: auto; }
+.veil span { padding: 9px 16px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.04); }
+
+.capture { position: absolute; left: 0; top: 0; width: 1px; height: 1px; opacity: 0; border: 0; padding: 0; resize: none; font-size: 16px; }
+
+.result {
+  position: absolute; inset: 0; z-index: 5; display: flex; align-items: center; justify-content: center; padding: 16px;
+  background: color-mix(in srgb, var(--screen) 86%, transparent); backdrop-filter: blur(6px);
+  animation: rise 0.45s var(--ease);
+}
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } }
+.card { display: flex; gap: 28px; align-items: center; flex-wrap: wrap; justify-content: center; color: var(--scr-ink); }
+.big { font: 400 60px/1 var(--font-logo); color: var(--acc-text); letter-spacing: -0.03em; }
+.big small { display: block; margin-top: 8px; font: 500 11px var(--font-ui); letter-spacing: 0.08em; text-transform: uppercase; color: #8a91a6; }
+.side { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.stats { display: flex; gap: 20px; font-variant-numeric: tabular-nums; }
+.stats b { display: block; font: 500 19px var(--font-code); }
+.stats span { font-size: 11px; color: #8a91a6; text-transform: uppercase; letter-spacing: 0.06em; }
+.spark { width: 220px; max-width: 100%; height: 50px; overflow: visible; }
+
+.bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: space-between; }
+.file { font: 500 12.5px var(--font-code); color: var(--muted); text-decoration: none; display: inline-flex; align-items: center; gap: 8px; min-width: 0; overflow-wrap: anywhere; }
+.file:hover { color: var(--ink); }
+.file i { width: 8px; height: 8px; border-radius: 50%; background: var(--acc); flex: none; transition: background-color 0.6s; }
+.hints { display: flex; flex-wrap: wrap; gap: 8px 18px; color: var(--muted); font-size: 13px; }
+.hints div { display: flex; align-items: center; gap: 6px; }
+.hints kbd { font: 500 11px var(--font-code); color: var(--cap-ink); background: var(--cap); border: 1px solid var(--cap-border); border-radius: 6px; padding: 2px 6px; box-shadow: 0 2px 0 var(--cap-edge); }
+.notice { padding: 28px 22px; color: var(--scr-ink); display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+
+@media (max-width: 560px) {
+  .code { --lh: 28px; }
+  .code .content { font-size: 13px; }
+  .num { width: 36px; padding-right: 10px; }
+  .text { --lh: 38px; padding: 14px 16px; }
+  .text .content { font-size: 18px; }
+  .big { font-size: 44px; }
+}

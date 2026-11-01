@@ -73,5 +73,14 @@ class ExtractTest(unittest.TestCase):
         self.assertEqual(extract_from_source(src, "b.py"), [])
 
 
+class DoctestOnlyDocstringTest(unittest.TestCase):
+    def test_docstring_starting_with_doctest_is_dropped(self):
+        src = 'def h(x):\n    """\n    >>> h(1)\n    1\n    """\n' + "".join(f"    x{i} = x\n" for i in range(8)) + "    return x\n"
+        snips = extract_from_source(src, "c.py")
+        self.assertEqual(len(snips), 1)
+        self.assertNotIn('"""', snips[0]["code"])
+        self.assertNotIn(">>>", snips[0]["code"])
+
+
 if __name__ == "__main__":
     unittest.main()

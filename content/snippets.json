@@ -81,7 +81,7 @@
   "id": "dynamic_programming/abbreviation.py#abbr",
   "path": "dynamic_programming/abbreviation.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/dynamic_programming/abbreviation.py",
-  "code": "def abbr(a: str, b: str) -> bool:\n    \"\"\">>> abbr(\"daBcd\", \"ABC\")\"\"\"\n    n = len(a)\n    m = len(b)\n    dp = [[False for _ in range(m + 1)] for _ in range(n + 1)]\n    dp[0][0] = True\n    for i in range(n):\n        for j in range(m + 1):\n            if dp[i][j]:\n                if j < m and a[i].upper() == b[j]:\n                    dp[i + 1][j + 1] = True\n                if a[i].islower():\n                    dp[i + 1][j] = True\n    return dp[n][m]"
+  "code": "def abbr(a: str, b: str) -> bool:\n    n = len(a)\n    m = len(b)\n    dp = [[False for _ in range(m + 1)] for _ in range(n + 1)]\n    dp[0][0] = True\n    for i in range(n):\n        for j in range(m + 1):\n            if dp[i][j]:\n                if j < m and a[i].upper() == b[j]:\n                    dp[i + 1][j + 1] = True\n                if a[i].islower():\n                    dp[i + 1][j] = True\n    return dp[n][m]"
  },
  {
   "id": "electronics/apparent_power.py#apparent_power",
@@ -177,7 +177,7 @@
   "id": "maths/abs.py#abs_min",
   "path": "maths/abs.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/maths/abs.py",
-  "code": "def abs_min(x: list[int]) -> int:\n    \"\"\">>> abs_min([0,5,1,11])\"\"\"\n    if len(x) == 0:\n        raise ValueError(\"abs_min() arg is an empty sequence\")\n    j = x[0]\n    for i in x:\n        if abs_val(i) < abs_val(j):\n            j = i\n    return j"
+  "code": "def abs_min(x: list[int]) -> int:\n    if len(x) == 0:\n        raise ValueError(\"abs_min() arg is an empty sequence\")\n    j = x[0]\n    for i in x:\n        if abs_val(i) < abs_val(j):\n            j = i\n    return j"
  },
  {
   "id": "matrix/binary_search_matrix.py#binary_search",
@@ -201,7 +201,7 @@
   "id": "other/activity_selection.py#print_max_activities",
   "path": "other/activity_selection.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/other/activity_selection.py",
-  "code": "def print_max_activities(start: list[int], finish: list[int]) -> None:\n    \"\"\">>> start = [1, 3, 0, 5, 8, 5]\"\"\"\n    n = len(finish)\n    print(\"The following activities are selected:\")\n\n    # The first activity is always selected\n    i = 0\n    print(i, end=\",\")\n\n    # Consider rest of the activities\n    for j in range(n):\n        # If this activity has start time greater than\n        # or equal to the finish time of previously\n        # selected activity, then select it\n        if start[j] >= finish[i]:\n            print(j, end=\",\")\n            i = j"
+  "code": "def print_max_activities(start: list[int], finish: list[int]) -> None:\n    n = len(finish)\n    print(\"The following activities are selected:\")\n\n    # The first activity is always selected\n    i = 0\n    print(i, end=\",\")\n\n    # Consider rest of the activities\n    for j in range(n):\n        # If this activity has start time greater than\n        # or equal to the finish time of previously\n        # selected activity, then select it\n        if start[j] >= finish[i]:\n            print(j, end=\",\")\n            i = j"
  },
  {
   "id": "physics/altitude_pressure.py#get_altitude_at_pressure",
@@ -279,7 +279,7 @@
   "id": "ciphers/affine_cipher.py#encrypt_message",
   "path": "ciphers/affine_cipher.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/ciphers/affine_cipher.py",
-  "code": "def encrypt_message(key: int, message: str) -> str:\n    \"\"\">>> encrypt_message(4545, 'The affine cipher is a type of monoalphabetic '\"\"\"\n    key_a, key_b = divmod(key, len(SYMBOLS))\n    check_keys(key_a, key_b, \"encrypt\")\n    cipher_text = \"\"\n    for symbol in message:\n        if symbol in SYMBOLS:\n            sym_index = SYMBOLS.find(symbol)\n            cipher_text += SYMBOLS[(sym_index * key_a + key_b) % len(SYMBOLS)]\n        else:\n            cipher_text += symbol\n    return cipher_text"
+  "code": "def encrypt_message(key: int, message: str) -> str:\n    key_a, key_b = divmod(key, len(SYMBOLS))\n    check_keys(key_a, key_b, \"encrypt\")\n    cipher_text = \"\"\n    for symbol in message:\n        if symbol in SYMBOLS:\n            sym_index = SYMBOLS.find(symbol)\n            cipher_text += SYMBOLS[(sym_index * key_a + key_b) % len(SYMBOLS)]\n        else:\n            cipher_text += symbol\n    return cipher_text"
  },
  {
   "id": "computer_vision/flip_augmentation.py#get_dataset",
@@ -381,7 +381,7 @@
   "id": "greedy_methods/best_time_to_buy_and_sell_stock.py#max_profit",
   "path": "greedy_methods/best_time_to_buy_and_sell_stock.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/greedy_methods/best_time_to_buy_and_sell_stock.py",
-  "code": "def max_profit(prices: list[int]) -> int:\n    \"\"\">>> max_profit([7, 1, 5, 3, 6, 4])\"\"\"\n    if not prices:\n        return 0\n\n    min_price = prices[0]\n    max_profit: int = 0\n\n    for price in prices:\n        min_price = min(price, min_price)\n        max_profit = max(price - min_price, max_profit)\n\n    return max_profit"
+  "code": "def max_profit(prices: list[int]) -> int:\n    if not prices:\n        return 0\n\n    min_price = prices[0]\n    max_profit: int = 0\n\n    for price in prices:\n        min_price = min(price, min_price)\n        max_profit = max(price - min_price, max_profit)\n\n    return max_profit"
  },
  {
   "id": "hashes/chaos_machine.py#push",
@@ -411,7 +411,7 @@
   "id": "maths/abs.py#abs_max",
   "path": "maths/abs.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/maths/abs.py",
-  "code": "def abs_max(x: list[int]) -> int:\n    \"\"\">>> abs_max([0,5,1,11])\"\"\"\n    if len(x) == 0:\n        raise ValueError(\"abs_max() arg is an empty sequence\")\n    j = x[0]\n    for i in x:\n        if abs(i) > abs(j):\n            j = i\n    return j"
+  "code": "def abs_max(x: list[int]) -> int:\n    if len(x) == 0:\n        raise ValueError(\"abs_max() arg is an empty sequence\")\n    j = x[0]\n    for i in x:\n        if abs(i) > abs(j):\n            j = i\n    return j"
  },
  {
   "id": "matrix/binary_search_matrix.py#mat_bin_search",
@@ -513,7 +513,7 @@
   "id": "ciphers/atbash.py#atbash_slow",
   "path": "ciphers/atbash.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/ciphers/atbash.py",
-  "code": "def atbash_slow(sequence: str) -> str:\n    \"\"\">>> atbash_slow(\"ABCDEFG\")\"\"\"\n    output = \"\"\n    for i in sequence:\n        extract = ord(i)\n        if 65 <= extract <= 90:\n            output += chr(155 - extract)\n        elif 97 <= extract <= 122:\n            output += chr(219 - extract)\n        else:\n            output += i\n    return output"
+  "code": "def atbash_slow(sequence: str) -> str:\n    output = \"\"\n    for i in sequence:\n        extract = ord(i)\n        if 65 <= extract <= 90:\n            output += chr(155 - extract)\n        elif 97 <= extract <= 122:\n            output += chr(219 - extract)\n        else:\n            output += i\n    return output"
  },
  {
   "id": "computer_vision/haralick_descriptors.py#transform",
@@ -819,7 +819,7 @@
   "id": "greedy_methods/fractional_knapsack.py#frac_knapsack",
   "path": "greedy_methods/fractional_knapsack.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/greedy_methods/fractional_knapsack.py",
-  "code": "def frac_knapsack(vl, wt, w, n):\n    \"\"\">>> frac_knapsack([60, 100, 120], [10, 20, 30], 50, 3)\"\"\"\n\n    r = sorted(zip(vl, wt), key=lambda x: x[0] / x[1], reverse=True)\n    vl, wt = [i[0] for i in r], [i[1] for i in r]\n    acc = list(accumulate(wt))\n    k = bisect(acc, w)\n    return (\n        0\n        if k == 0\n        else sum(vl[:k]) + (w - acc[k - 1]) * (vl[k]) / (wt[k])\n        if k != n\n        else sum(vl[:k])\n    )"
+  "code": "def frac_knapsack(vl, wt, w, n):\n\n    r = sorted(zip(vl, wt), key=lambda x: x[0] / x[1], reverse=True)\n    vl, wt = [i[0] for i in r], [i[1] for i in r]\n    acc = list(accumulate(wt))\n    k = bisect(acc, w)\n    return (\n        0\n        if k == 0\n        else sum(vl[:k]) + (w - acc[k - 1]) * (vl[k]) / (wt[k])\n        if k != n\n        else sum(vl[:k])\n    )"
  },
  {
   "id": "hashes/crc32.py#_generate_crc32_table",
@@ -831,7 +831,7 @@
   "id": "linear_algebra/jacobi_iteration_method.py#strictly_diagonally_dominant",
   "path": "linear_algebra/jacobi_iteration_method.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/linear_algebra/jacobi_iteration_method.py",
-  "code": "def strictly_diagonally_dominant(table: NDArray[float64]) -> bool:\n    \"\"\">>> table = np.array([[4, 1, 1, 2], [1, 5, 2, -6], [1, 2, 4, -4]])\"\"\"\n\n    rows, cols = table.shape\n\n    is_diagonally_dominant = True\n\n    for i in range(rows):\n        total = 0\n        for j in range(cols - 1):\n            if i == j:\n                continue\n            total += table[i][j]\n\n        if table[i][i] <= total:\n            raise ValueError(\"Coefficient matrix is not strictly diagonally dominant\")\n\n    return is_diagonally_dominant"
+  "code": "def strictly_diagonally_dominant(table: NDArray[float64]) -> bool:\n\n    rows, cols = table.shape\n\n    is_diagonally_dominant = True\n\n    for i in range(rows):\n        total = 0\n        for j in range(cols - 1):\n            if i == j:\n                continue\n            total += table[i][j]\n\n        if table[i][i] <= total:\n            raise ValueError(\"Coefficient matrix is not strictly diagonally dominant\")\n\n    return is_diagonally_dominant"
  },
  {
   "id": "machine_learning/automatic_differentiation.py#Operation",
@@ -891,7 +891,7 @@
   "id": "searches/binary_tree_traversal.py#level_order",
   "path": "searches/binary_tree_traversal.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/searches/binary_tree_traversal.py",
-  "code": "def level_order(node: TreeNode) -> None:\n    \"\"\">>> root = TreeNode(1)\"\"\"\n    if not isinstance(node, TreeNode) or not node:\n        return\n    q: queue.Queue = queue.Queue()\n    q.put(node)\n    while not q.empty():\n        node_dequeued = q.get()\n        print(node_dequeued.data, end=\",\")\n        if node_dequeued.left:\n            q.put(node_dequeued.left)\n        if node_dequeued.right:\n            q.put(node_dequeued.right)"
+  "code": "def level_order(node: TreeNode) -> None:\n    if not isinstance(node, TreeNode) or not node:\n        return\n    q: queue.Queue = queue.Queue()\n    q.put(node)\n    while not q.empty():\n        node_dequeued = q.get()\n        print(node_dequeued.data, end=\",\")\n        if node_dequeued.left:\n            q.put(node_dequeued.left)\n        if node_dequeued.right:\n            q.put(node_dequeued.right)"
  },
  {
   "id": "sorts/benchmark_sorts.py#main",
@@ -1029,7 +1029,7 @@
   "id": "greedy_methods/fractional_knapsack_2.py#fractional_knapsack",
   "path": "greedy_methods/fractional_knapsack_2.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/greedy_methods/fractional_knapsack_2.py",
-  "code": "def fractional_knapsack(\n    value: list[int], weight: list[int], capacity: int\n) -> tuple[float, list[float]]:\n    \"\"\">>> value = [1, 3, 5, 7, 9]\"\"\"\n    index = list(range(len(value)))\n    ratio = [v / w for v, w in zip(value, weight)]\n    index.sort(key=lambda i: ratio[i], reverse=True)\n\n    max_value: float = 0\n    fractions: list[float] = [0] * len(value)\n    for i in index:\n        if weight[i] <= capacity:\n            fractions[i] = 1\n            max_value += value[i]\n            capacity -= weight[i]\n        else:\n            fractions[i] = capacity / weight[i]\n            max_value += value[i] * capacity / weight[i]\n            break\n\n    return max_value, fractions"
+  "code": "def fractional_knapsack(\n    value: list[int], weight: list[int], capacity: int\n) -> tuple[float, list[float]]:\n    index = list(range(len(value)))\n    ratio = [v / w for v, w in zip(value, weight)]\n    index.sort(key=lambda i: ratio[i], reverse=True)\n\n    max_value: float = 0\n    fractions: list[float] = [0] * len(value)\n    for i in index:\n        if weight[i] <= capacity:\n            fractions[i] = 1\n            max_value += value[i]\n            capacity -= weight[i]\n        else:\n            fractions[i] = capacity / weight[i]\n            max_value += value[i] * capacity / weight[i]\n            break\n\n    return max_value, fractions"
  },
  {
   "id": "hashes/crc32.py#crc32",
@@ -1113,19 +1113,19 @@
   "id": "backtracking/combination_sum.py#combination_sum",
   "path": "backtracking/combination_sum.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/backtracking/combination_sum.py",
-  "code": "def combination_sum(candidates: list, target: int) -> list:\n    \"\"\">>> combination_sum([2, 3, 5], 8)\"\"\"\n    if not candidates:\n        raise ValueError(\"Candidates list should not be empty\")\n\n    if any(x < 0 for x in candidates):\n        raise ValueError(\"All elements in candidates must be non-negative\")\n\n    path = []  # type: list[int]\n    answer = []  # type: list[int]\n    backtrack(candidates, path, answer, target, 0)\n    return answer"
+  "code": "def combination_sum(candidates: list, target: int) -> list:\n    if not candidates:\n        raise ValueError(\"Candidates list should not be empty\")\n\n    if any(x < 0 for x in candidates):\n        raise ValueError(\"All elements in candidates must be non-negative\")\n\n    path = []  # type: list[int]\n    answer = []  # type: list[int]\n    backtrack(candidates, path, answer, target, 0)\n    return answer"
  },
  {
   "id": "bit_manipulation/bitwise_addition_recursive.py#bitwise_addition_recursive",
   "path": "bit_manipulation/bitwise_addition_recursive.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/bit_manipulation/bitwise_addition_recursive.py",
-  "code": "def bitwise_addition_recursive(number: int, other_number: int) -> int:\n    \"\"\">>> bitwise_addition_recursive(4, 5)\"\"\"\n\n    if not isinstance(number, int) or not isinstance(other_number, int):\n        raise TypeError(\"Both arguments MUST be integers!\")\n\n    if number < 0 or other_number < 0:\n        raise ValueError(\"Both arguments MUST be non-negative!\")\n\n    bitwise_sum = number ^ other_number\n    carry = number & other_number\n\n    if carry == 0:\n        return bitwise_sum\n\n    return bitwise_addition_recursive(bitwise_sum, carry << 1)"
+  "code": "def bitwise_addition_recursive(number: int, other_number: int) -> int:\n\n    if not isinstance(number, int) or not isinstance(other_number, int):\n        raise TypeError(\"Both arguments MUST be integers!\")\n\n    if number < 0 or other_number < 0:\n        raise ValueError(\"Both arguments MUST be non-negative!\")\n\n    bitwise_sum = number ^ other_number\n    carry = number & other_number\n\n    if carry == 0:\n        return bitwise_sum\n\n    return bitwise_addition_recursive(bitwise_sum, carry << 1)"
  },
  {
   "id": "boolean_algebra/quine_mc_cluskey.py#compare_string",
   "path": "boolean_algebra/quine_mc_cluskey.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/boolean_algebra/quine_mc_cluskey.py",
-  "code": "def compare_string(string1: str, string2: str) -> str | Literal[False]:\n    \"\"\">>> compare_string('0010','0110')\"\"\"\n    list1 = list(string1)\n    list2 = list(string2)\n    count = 0\n    for i in range(len(list1)):\n        if list1[i] != list2[i]:\n            count += 1\n            list1[i] = \"_\"\n    if count > 1:\n        return False\n    else:\n        return \"\".join(list1)"
+  "code": "def compare_string(string1: str, string2: str) -> str | Literal[False]:\n    list1 = list(string1)\n    list2 = list(string2)\n    count = 0\n    for i in range(len(list1)):\n        if list1[i] != list2[i]:\n            count += 1\n            list1[i] = \"_\"\n    if count > 1:\n        return False\n    else:\n        return \"\".join(list1)"
  },
  {
   "id": "cellular_automata/game_of_life.py#__judge_point",
@@ -1311,7 +1311,7 @@
   "id": "boolean_algebra/quine_mc_cluskey.py#check",
   "path": "boolean_algebra/quine_mc_cluskey.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/boolean_algebra/quine_mc_cluskey.py",
-  "code": "def check(binary: list[str]) -> list[str]:\n    \"\"\">>> check(['0.00.01.5'])\"\"\"\n    pi = []\n    while True:\n        check1 = [\"$\"] * len(binary)\n        temp = []\n        for i in range(len(binary)):\n            for j in range(i + 1, len(binary)):\n                k = compare_string(binary[i], binary[j])\n                if k is False:\n                    check1[i] = \"*\"\n                    check1[j] = \"*\"\n                    temp.append(\"X\")\n        for i in range(len(binary)):\n            if check1[i] == \"$\":\n                pi.append(binary[i])\n        if len(temp) == 0:\n            return pi\n        binary = list(set(temp))"
+  "code": "def check(binary: list[str]) -> list[str]:\n    pi = []\n    while True:\n        check1 = [\"$\"] * len(binary)\n        temp = []\n        for i in range(len(binary)):\n            for j in range(i + 1, len(binary)):\n                k = compare_string(binary[i], binary[j])\n                if k is False:\n                    check1[i] = \"*\"\n                    check1[j] = \"*\"\n                    temp.append(\"X\")\n        for i in range(len(binary)):\n            if check1[i] == \"$\":\n                pi.append(binary[i])\n        if len(temp) == 0:\n            return pi\n        binary = list(set(temp))"
  },
  {
   "id": "cellular_automata/nagel_schrekenberg.py#construct_highway",
@@ -1377,7 +1377,7 @@
   "id": "financial/interest.py#simple_interest",
   "path": "financial/interest.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/financial/interest.py",
-  "code": "def simple_interest(\n    principal: float, daily_interest_rate: float, days_between_payments: float\n) -> float:\n    \"\"\">>> simple_interest(18000.0, 0.06, 3)\"\"\"\n    if days_between_payments <= 0:\n        raise ValueError(\"days_between_payments must be > 0\")\n    if daily_interest_rate < 0:\n        raise ValueError(\"daily_interest_rate must be >= 0\")\n    if principal <= 0:\n        raise ValueError(\"principal must be > 0\")\n    return principal * daily_interest_rate * days_between_payments"
+  "code": "def simple_interest(\n    principal: float, daily_interest_rate: float, days_between_payments: float\n) -> float:\n    if days_between_payments <= 0:\n        raise ValueError(\"days_between_payments must be > 0\")\n    if daily_interest_rate < 0:\n        raise ValueError(\"daily_interest_rate must be >= 0\")\n    if principal <= 0:\n        raise ValueError(\"principal must be > 0\")\n    return principal * daily_interest_rate * days_between_payments"
  },
  {
   "id": "fractals/koch_snowflake.py#iteration_step",
@@ -1494,10 +1494,10 @@
   "code": "def get_distance(highway_now: list, car_index: int) -> int:\n    \"\"\"Get the distance between a car (at index car_index) and the next car\"\"\"\n\n    distance = 0\n    cells = highway_now[car_index + 1 :]\n    for cell in range(len(cells)):  # May need a better name for this\n        if cells[cell] != -1:  # If the cell is not empty then\n            return distance  # we have the distance we wanted\n        distance += 1\n    # Here if the car is near the end of the highway\n    return distance + get_distance(highway_now, -1)"
  },
  {
-  "id": "ciphers/base32.py#base32_decode",
-  "path": "ciphers/base32.py",
-  "url": "https://github.com/TheAlgorithms/Python/blob/master/ciphers/base32.py",
-  "code": "def base32_decode(data: bytes) -> bytes:\n    \"\"\">>> base32_decode(b'JBSWY3DPEBLW64TMMQQQ====')\"\"\"\n    binary_chunks = \"\".join(\n        bin(B32_CHARSET.index(_d))[2:].zfill(5)\n        for _d in data.decode(\"utf-8\").strip(\"=\")\n    )\n    binary_data = list(map(\"\".join, zip(*[iter(binary_chunks)] * 8)))\n    return bytes(\"\".join([chr(int(_d, 2)) for _d in binary_data]), \"utf-8\")"
+  "id": "ciphers/base58.py#base64_encode",
+  "path": "ciphers/base58.py",
+  "url": "https://github.com/TheAlgorithms/Python/blob/master/ciphers/base58.py",
+  "code": "def base64_encode(data: bytes) -> bytes:\n    \"\"\"Encodes data according to RFC4648.\"\"\"\n    # Make sure the supplied data is a bytes-like object\n    if not isinstance(data, bytes):\n        msg = f\"a bytes-like object is required, not '{data.__class__.__name__}'\"\n        raise TypeError(msg)\n\n    binary_stream = \"\".join(bin(byte)[2:].zfill(8) for byte in data)\n\n    padding_needed = len(binary_stream) % 6 != 0\n\n    if padding_needed:\n        # The padding that will be added later\n        padding = b\"=\" * ((6 - len(binary_stream) % 6) // 2)\n\n        # Append binary_stream with arbitrary binary digits (0's by default) to make its\n        # length a multiple of 6.\n        binary_stream += \"0\" * (6 - len(binary_stream) % 6)\n    else:\n        padding = b\"\"\n\n    # Encode every 6 binary digits to their corresponding Base64 character\n    return (\n        \"\".join(\n            B64_CHARSET[int(binary_stream[index : index + 6], 2)]\n            for index in range(0, len(binary_stream), 6)\n        ).encode()\n        + padding\n    )"
  },
  {
   "id": "computer_vision/mosaic_augmentation.py#get_dataset",
@@ -1539,7 +1539,7 @@
   "id": "dynamic_programming/integer_partition.py#partition",
   "path": "dynamic_programming/integer_partition.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/dynamic_programming/integer_partition.py",
-  "code": "def partition(m: int) -> int:\n    \"\"\">>> partition(5)\"\"\"\n    memo: list[list[int]] = [[0 for _ in range(m)] for _ in range(m + 1)]\n    for i in range(m + 1):\n        memo[i][0] = 1\n\n    for n in range(m + 1):\n        for k in range(1, m):\n            memo[n][k] += memo[n][k - 1]\n            if n - k > 0:\n                memo[n][k] += memo[n - k - 1][k]\n\n    return memo[m][m - 1]"
+  "code": "def partition(m: int) -> int:\n    memo: list[list[int]] = [[0 for _ in range(m)] for _ in range(m + 1)]\n    for i in range(m + 1):\n        memo[i][0] = 1\n\n    for n in range(m + 1):\n        for k in range(1, m):\n            memo[n][k] += memo[n][k - 1]\n            if n - k > 0:\n                memo[n][k] += memo[n - k - 1][k]\n\n    return memo[m][m - 1]"
  },
  {
   "id": "electronics/coulombs_law.py#couloumbs_law",
@@ -1551,7 +1551,7 @@
   "id": "financial/interest.py#compound_interest",
   "path": "financial/interest.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/financial/interest.py",
-  "code": "def compound_interest(\n    principal: float,\n    nominal_annual_interest_rate_percentage: float,\n    number_of_compounding_periods: float,\n) -> float:\n    \"\"\">>> compound_interest(10000.0, 0.05, 3)\"\"\"\n    if number_of_compounding_periods <= 0:\n        raise ValueError(\"number_of_compounding_periods must be > 0\")\n    if nominal_annual_interest_rate_percentage < 0:\n        raise ValueError(\"nominal_annual_interest_rate_percentage must be >= 0\")\n    if principal <= 0:\n        raise ValueError(\"principal must be > 0\")\n\n    return principal * (\n        (1 + nominal_annual_interest_rate_percentage) ** number_of_compounding_periods\n        - 1\n    )"
+  "code": "def compound_interest(\n    principal: float,\n    nominal_annual_interest_rate_percentage: float,\n    number_of_compounding_periods: float,\n) -> float:\n    if number_of_compounding_periods <= 0:\n        raise ValueError(\"number_of_compounding_periods must be > 0\")\n    if nominal_annual_interest_rate_percentage < 0:\n        raise ValueError(\"nominal_annual_interest_rate_percentage must be >= 0\")\n    if principal <= 0:\n        raise ValueError(\"principal must be > 0\")\n\n    return principal * (\n        (1 + nominal_annual_interest_rate_percentage) ** number_of_compounding_periods\n        - 1\n    )"
  },
  {
   "id": "fractals/koch_snowflake.py#plot",
@@ -1587,7 +1587,7 @@
   "id": "linear_algebra/src/conjugate_gradient.py#test_conjugate_gradient",
   "path": "linear_algebra/src/conjugate_gradient.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/linear_algebra/src/conjugate_gradient.py",
-  "code": "def test_conjugate_gradient() -> None:\n    \"\"\">>> test_conjugate_gradient()  # self running tests\"\"\"\n    # Create linear system with SPD matrix and known solution x_true.\n    dimension = 3\n    spd_matrix = _create_spd_matrix(dimension)\n    rng = np.random.default_rng()\n    x_true = rng.normal(size=(dimension, 1))\n    b = np.dot(spd_matrix, x_true)\n\n    # Numpy solution.\n    x_numpy = np.linalg.solve(spd_matrix, b)\n\n    # Our implementation.\n    x_conjugate_gradient = conjugate_gradient(spd_matrix, b)\n\n    # Ensure both solutions are close to x_true (and therefore one another).\n    assert np.linalg.norm(x_numpy - x_true) <= 1e-6\n    assert np.linalg.norm(x_conjugate_gradient - x_true) <= 1e-6"
+  "code": "def test_conjugate_gradient() -> None:\n    # Create linear system with SPD matrix and known solution x_true.\n    dimension = 3\n    spd_matrix = _create_spd_matrix(dimension)\n    rng = np.random.default_rng()\n    x_true = rng.normal(size=(dimension, 1))\n    b = np.dot(spd_matrix, x_true)\n\n    # Numpy solution.\n    x_numpy = np.linalg.solve(spd_matrix, b)\n\n    # Our implementation.\n    x_conjugate_gradient = conjugate_gradient(spd_matrix, b)\n\n    # Ensure both solutions are close to x_true (and therefore one another).\n    assert np.linalg.norm(x_numpy - x_true) <= 1e-6\n    assert np.linalg.norm(x_conjugate_gradient - x_true) <= 1e-6"
  },
  {
   "id": "machine_learning/federated_averaging.py#_validate_clients",
@@ -1668,10 +1668,10 @@
   "code": "def new_generation(cells: list[list[int]], rule: list[int], time: int) -> list[int]:\n    population = len(cells[0])  # 31\n    next_generation = []\n    for i in range(population):\n        # Get the neighbors of each cell\n        # Handle neighbours outside bounds by using 0 as their value\n        left_neighbor = 0 if i == 0 else cells[time][i - 1]\n        right_neighbor = 0 if i == population - 1 else cells[time][i + 1]\n        # Define a new cell and add it to the new generation\n        situation = 7 - int(f\"{left_neighbor}{cells[time][i]}{right_neighbor}\", 2)\n        next_generation.append(rule[situation])\n    return next_generation"
  },
  {
-  "id": "ciphers/base58.py#base64_encode",
-  "path": "ciphers/base58.py",
-  "url": "https://github.com/TheAlgorithms/Python/blob/master/ciphers/base58.py",
-  "code": "def base64_encode(data: bytes) -> bytes:\n    \"\"\"Encodes data according to RFC4648.\"\"\"\n    # Make sure the supplied data is a bytes-like object\n    if not isinstance(data, bytes):\n        msg = f\"a bytes-like object is required, not '{data.__class__.__name__}'\"\n        raise TypeError(msg)\n\n    binary_stream = \"\".join(bin(byte)[2:].zfill(8) for byte in data)\n\n    padding_needed = len(binary_stream) % 6 != 0\n\n    if padding_needed:\n        # The padding that will be added later\n        padding = b\"=\" * ((6 - len(binary_stream) % 6) // 2)\n\n        # Append binary_stream with arbitrary binary digits (0's by default) to make its\n        # length a multiple of 6.\n        binary_stream += \"0\" * (6 - len(binary_stream) % 6)\n    else:\n        padding = b\"\"\n\n    # Encode every 6 binary digits to their corresponding Base64 character\n    return (\n        \"\".join(\n            B64_CHARSET[int(binary_stream[index : index + 6], 2)]\n            for index in range(0, len(binary_stream), 6)\n        ).encode()\n        + padding\n    )"
+  "id": "ciphers/base85.py#ascii85_decode",
+  "path": "ciphers/base85.py",
+  "url": "https://github.com/TheAlgorithms/Python/blob/master/ciphers/base85.py",
+  "code": "def ascii85_decode(data: bytes) -> bytes:\n    null_values = 5 * ((len(data) // 5) + 1) - len(data)\n    binary_data = data.decode(\"utf-8\") + \"u\" * null_values\n    b85_chunks = map(\"\".join, zip(*[iter(binary_data)] * 5))\n    b85_segments = [[ord(_s) - 33 for _s in chunk] for chunk in b85_chunks]\n    results = [bin(_base85_to_10(chunk))[2::].zfill(32) for chunk in b85_segments]\n    char_chunks = [\n        [chr(int(_s, 2)) for _s in map(\"\".join, zip(*[iter(r)] * 8))] for r in results\n    ]\n    result = \"\".join(\"\".join(char) for char in char_chunks)\n    offset = int(null_values % 5 == 0)\n    return bytes(result[: offset - null_values], \"utf-8\")"
  },
  {
   "id": "computer_vision/vision_transformer.py#create_patches",
@@ -1842,10 +1842,10 @@
   "code": "def visualise(wt: WaTor, iter_number: int, *, colour: bool = True) -> None:\n    \"\"\"Visually displays the Wa-Tor planet using\"\"\"\n    if colour:\n        __import__(\"os\").system(\"\")\n        print(\"\\x1b[0;0H\\x1b[2J\\x1b[?25l\")\n\n    reprint = \"\\x1b[0;0H\" if colour else \"\"\n    ansi_colour_end = \"\\x1b[0m \" if colour else \" \"\n\n    planet = wt.planet\n    output = \"\"\n\n    # Iterate over every entity in the planet\n    for row in planet:\n        for entity in row:\n            if entity is None:\n                output += \" . \"\n            else:\n                if colour is True:\n                    output += (\n                        \"\\x1b[38;2;96;241;151m\"\n                        if entity.prey\n                        else \"\\x1b[38;2;255;255;15m\"\n                    )\n                output += f\" {'#' if entity.prey else 'x'}{ansi_colour_end}\"\n\n        output += \"\\n\"\n\n    entities = wt.get_entities()\n    prey_count = sum(entity.prey for entity in entities)\n\n    print(\n        f\"{output}\\n Iteration: {iter_number} | Prey count: {prey_count} | \"\n        f\"Predator count: {len(entities) - prey_count} | {reprint}\"\n    )\n    # Block the thread to be able to visualise seeing the algorithm\n    sleep(0.05)"
  },
  {
-  "id": "ciphers/base85.py#ascii85_encode",
-  "path": "ciphers/base85.py",
-  "url": "https://github.com/TheAlgorithms/Python/blob/master/ciphers/base85.py",
-  "code": "def ascii85_encode(data: bytes) -> bytes:\n    \"\"\">>> ascii85_encode(b\"\")\"\"\"\n    binary_data = \"\".join(bin(ord(d))[2:].zfill(8) for d in data.decode(\"utf-8\"))\n    null_values = (32 * ((len(binary_data) // 32) + 1) - len(binary_data)) // 8\n    binary_data = binary_data.ljust(32 * ((len(binary_data) // 32) + 1), \"0\")\n    b85_chunks = [int(_s, 2) for _s in map(\"\".join, zip(*[iter(binary_data)] * 32))]\n    result = \"\".join(_base10_to_85(chunk)[::-1] for chunk in b85_chunks)\n    return bytes(result[:-null_values] if null_values % 4 != 0 else result, \"utf-8\")"
+  "id": "ciphers/beaufort_cipher.py#generate_key",
+  "path": "ciphers/beaufort_cipher.py",
+  "url": "https://github.com/TheAlgorithms/Python/blob/master/ciphers/beaufort_cipher.py",
+  "code": "def generate_key(message: str, key: str) -> str:\n    x = len(message)\n    i = 0\n    while True:\n        if x == i:\n            i = 0\n        if len(key) == len(message):\n            break\n        key += key[i]\n        i += 1\n    return key"
  },
  {
   "id": "computer_vision/vision_transformer.py#patch_embedding",
@@ -1923,7 +1923,7 @@
   "id": "linear_algebra/src/power_iteration.py#test_power_iteration",
   "path": "linear_algebra/src/power_iteration.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/linear_algebra/src/power_iteration.py",
-  "code": "def test_power_iteration() -> None:\n    \"\"\">>> test_power_iteration()  # self running tests\"\"\"\n    real_input_matrix = np.array([[41, 4, 20], [4, 26, 30], [20, 30, 50]])\n    real_vector = np.array([41, 4, 20])\n    complex_input_matrix = real_input_matrix.astype(np.complex128)\n    imag_matrix = np.triu(1j * complex_input_matrix, 1)\n    complex_input_matrix += imag_matrix\n    complex_input_matrix += -1 * imag_matrix.T\n    complex_vector = np.array([41, 4, 20]).astype(np.complex128)\n\n    for problem_type in [\"real\", \"complex\"]:\n        match problem_type:\n            case \"real\":\n                input_matrix = real_input_matrix\n                vector = real_vector\n            case \"complex\":\n                input_matrix = complex_input_matrix\n                vector = complex_vector\n\n        # Our implementation.\n        eigen_value, eigen_vector = power_iteration(input_matrix, vector)\n\n        # Numpy implementation.\n\n        # Get eigenvalues and eigenvectors using built-in numpy\n        # eigh (eigh used for symmetric or hermetian matrices).\n        eigen_values, eigen_vectors = np.linalg.eigh(input_matrix)\n        # Last eigenvalue is the maximum one.\n        eigen_value_max = eigen_values[-1]\n        # Last column in this matrix is eigenvector corresponding to largest eigenvalue.\n        eigen_vector_max = eigen_vectors[:, -1]\n\n        # Check our implementation and numpy gives close answers.\n        assert np.abs(eigen_value - eigen_value_max) <= 1e-6\n        # Take absolute values element wise of each eigenvector.\n        # as they are only unique to a minus sign.\n        assert np.linalg.norm(np.abs(eigen_vector) - np.abs(eigen_vector_max)) <= 1e-6"
+  "code": "def test_power_iteration() -> None:\n    real_input_matrix = np.array([[41, 4, 20], [4, 26, 30], [20, 30, 50]])\n    real_vector = np.array([41, 4, 20])\n    complex_input_matrix = real_input_matrix.astype(np.complex128)\n    imag_matrix = np.triu(1j * complex_input_matrix, 1)\n    complex_input_matrix += imag_matrix\n    complex_input_matrix += -1 * imag_matrix.T\n    complex_vector = np.array([41, 4, 20]).astype(np.complex128)\n\n    for problem_type in [\"real\", \"complex\"]:\n        match problem_type:\n            case \"real\":\n                input_matrix = real_input_matrix\n                vector = real_vector\n            case \"complex\":\n                input_matrix = complex_input_matrix\n                vector = complex_vector\n\n        # Our implementation.\n        eigen_value, eigen_vector = power_iteration(input_matrix, vector)\n\n        # Numpy implementation.\n\n        # Get eigenvalues and eigenvectors using built-in numpy\n        # eigh (eigh used for symmetric or hermetian matrices).\n        eigen_values, eigen_vectors = np.linalg.eigh(input_matrix)\n        # Last eigenvalue is the maximum one.\n        eigen_value_max = eigen_values[-1]\n        # Last column in this matrix is eigenvector corresponding to largest eigenvalue.\n        eigen_vector_max = eigen_vectors[:, -1]\n\n        # Check our implementation and numpy gives close answers.\n        assert np.abs(eigen_value - eigen_value_max) <= 1e-6\n        # Take absolute values element wise of each eigenvector.\n        # as they are only unique to a minus sign.\n        assert np.linalg.norm(np.abs(eigen_vector) - np.abs(eigen_vector_max)) <= 1e-6"
  },
  {
   "id": "machine_learning/frequent_pattern_growth.py#TreeNode",
@@ -1992,10 +1992,10 @@
   "code": "def xor_convolution(sequence_a: list[int], sequence_b: list[int]) -> list[int]:\n    \"\"\"Compute bitwise XOR convolution C[k] = sum_{i ^ j = k} (A[i] * B[j]).\"\"\"\n    if len(sequence_a) != len(sequence_b):\n        raise ValueError(\"Input sequences must have equal length.\")\n\n    transformed_a = fwht_xor(sequence_a)\n    transformed_b = fwht_xor(sequence_b)\n    pointwise_product = [\n        transformed_a[index] * transformed_b[index] for index in range(len(sequence_a))\n    ]\n    return fwht_xor(pointwise_product, inverse=True)"
  },
  {
-  "id": "ciphers/base85.py#ascii85_decode",
-  "path": "ciphers/base85.py",
-  "url": "https://github.com/TheAlgorithms/Python/blob/master/ciphers/base85.py",
-  "code": "def ascii85_decode(data: bytes) -> bytes:\n    \"\"\">>> ascii85_decode(b\"\")\"\"\"\n    null_values = 5 * ((len(data) // 5) + 1) - len(data)\n    binary_data = data.decode(\"utf-8\") + \"u\" * null_values\n    b85_chunks = map(\"\".join, zip(*[iter(binary_data)] * 5))\n    b85_segments = [[ord(_s) - 33 for _s in chunk] for chunk in b85_chunks]\n    results = [bin(_base85_to_10(chunk))[2::].zfill(32) for chunk in b85_segments]\n    char_chunks = [\n        [chr(int(_s, 2)) for _s in map(\"\".join, zip(*[iter(r)] * 8))] for r in results\n    ]\n    result = \"\".join(\"\".join(char) for char in char_chunks)\n    offset = int(null_values % 5 == 0)\n    return bytes(result[: offset - null_values], \"utf-8\")"
+  "id": "ciphers/beaufort_cipher.py#cipher_text",
+  "path": "ciphers/beaufort_cipher.py",
+  "url": "https://github.com/TheAlgorithms/Python/blob/master/ciphers/beaufort_cipher.py",
+  "code": "def cipher_text(message: str, key_new: str) -> str:\n    cipher_text = \"\"\n    i = 0\n    for letter in message:\n        if letter == \" \":\n            cipher_text += \" \"\n        else:\n            x = (dict1[letter] - dict1[key_new[i]]) % 26\n            i += 1\n            cipher_text += dict2[x]\n    return cipher_text"
  },
  {
   "id": "conversions/convert_number_to_words.py#NumberWords",
@@ -2079,7 +2079,7 @@
   "id": "matrix/matrix_based_game.py#parse_moves",
   "path": "matrix/matrix_based_game.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/matrix/matrix_based_game.py",
-  "code": "def parse_moves(input_str: str) -> list[tuple[int, int]]:\n    \"\"\">>> parse_moves(\"0 1, 1 1\")\"\"\"\n    moves = []\n    for pair in input_str.split(\",\"):\n        parts = pair.strip().split()\n        if len(parts) != 2:\n            raise ValueError(\"Each move must have exactly two numbers.\")\n        x, y = map(int, parts)\n        moves.append((x, y))\n    return moves"
+  "code": "def parse_moves(input_str: str) -> list[tuple[int, int]]:\n    moves = []\n    for pair in input_str.split(\",\"):\n        parts = pair.strip().split()\n        if len(parts) != 2:\n            raise ValueError(\"Each move must have exactly two numbers.\")\n        x, y = map(int, parts)\n        moves.append((x, y))\n    return moves"
  },
  {
   "id": "other/h_index.py#h_index",
@@ -2130,10 +2130,10 @@
   "code": "def find_previous_power_of_two(number: int) -> int:\n    \"\"\"Find the largest power of two that is less than or equal to a given integer.\"\"\"\n    if not isinstance(number, int) or number < 0:\n        raise ValueError(\"Input must be a non-negative integer\")\n    if number == 0:\n        return 0\n    power = 1\n    while power <= number:\n        power <<= 1  # Equivalent to multiplying by 2\n    return power >> 1 if number > 1 else 1"
  },
  {
-  "id": "ciphers/beaufort_cipher.py#generate_key",
-  "path": "ciphers/beaufort_cipher.py",
-  "url": "https://github.com/TheAlgorithms/Python/blob/master/ciphers/beaufort_cipher.py",
-  "code": "def generate_key(message: str, key: str) -> str:\n    \"\"\">>> generate_key(\"THE GERMAN ATTACK\",\"SECRET\")\"\"\"\n    x = len(message)\n    i = 0\n    while True:\n        if x == i:\n            i = 0\n        if len(key) == len(message):\n            break\n        key += key[i]\n        i += 1\n    return key"
+  "id": "ciphers/brute_force_caesar_cipher.py#decrypt",
+  "path": "ciphers/brute_force_caesar_cipher.py",
+  "url": "https://github.com/TheAlgorithms/Python/blob/master/ciphers/brute_force_caesar_cipher.py",
+  "code": "def decrypt(message: str) -> None:\n    for key in range(len(string.ascii_uppercase)):\n        translated = \"\"\n        for symbol in message:\n            if symbol in string.ascii_uppercase:\n                num = string.ascii_uppercase.find(symbol)\n                num = num - key\n                if num < 0:\n                    num = num + len(string.ascii_uppercase)\n                translated = translated + string.ascii_uppercase[num]\n            else:\n                translated = translated + symbol\n        print(f\"Decryption using Key #{key}: {translated}\")"
  },
  {
   "id": "conversions/convert_number_to_words.py#convert_number",
@@ -2268,10 +2268,10 @@
   "code": "def find_unique_number(arr: list[int]) -> int:\n    \"\"\"Given a list of integers where every element appears twice except for one,\"\"\"\n    if not arr:\n        raise ValueError(\"input list must not be empty\")\n    if not all(isinstance(x, int) for x in arr):\n        raise TypeError(\"all elements must be integers\")\n\n    result = 0\n    for num in arr:\n        result ^= num\n    return result"
  },
  {
-  "id": "ciphers/beaufort_cipher.py#cipher_text",
-  "path": "ciphers/beaufort_cipher.py",
-  "url": "https://github.com/TheAlgorithms/Python/blob/master/ciphers/beaufort_cipher.py",
-  "code": "def cipher_text(message: str, key_new: str) -> str:\n    \"\"\">>> cipher_text(\"THE GERMAN ATTACK\",\"SECRETSECRETSECRE\")\"\"\"\n    cipher_text = \"\"\n    i = 0\n    for letter in message:\n        if letter == \" \":\n            cipher_text += \" \"\n        else:\n            x = (dict1[letter] - dict1[key_new[i]]) % 26\n            i += 1\n            cipher_text += dict2[x]\n    return cipher_text"
+  "id": "ciphers/caesar_cipher.py#encrypt",
+  "path": "ciphers/caesar_cipher.py",
+  "url": "https://github.com/TheAlgorithms/Python/blob/master/ciphers/caesar_cipher.py",
+  "code": "def encrypt(input_string: str, key: int, alphabet: str | None = None) -> str:\n    \"\"\"encrypt\"\"\"\n    # Set default alphabet to lower and upper case english chars\n    alpha = alphabet or ascii_letters\n\n    # The final result string\n    result = \"\"\n\n    for character in input_string:\n        if character not in alpha:\n            # Append without encryption if character is not in the alphabet\n            result += character\n        else:\n            # Get the index of the new key and make sure it isn't too large\n            new_key = (alpha.index(character) + key) % len(alpha)\n\n            # Append the encoded character to the alphabet\n            result += alpha[new_key]\n\n    return result"
  },
  {
   "id": "conversions/decimal_to_any.py#decimal_to_any",
@@ -2313,7 +2313,7 @@
   "id": "financial/present_value.py#present_value",
   "path": "financial/present_value.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/financial/present_value.py",
-  "code": "def present_value(discount_rate: float, cash_flows: list[float]) -> float:\n    \"\"\">>> present_value(0.13, [10, 20.70, -293, 297])\"\"\"\n    if discount_rate < 0:\n        raise ValueError(\"Discount rate cannot be negative\")\n    if not cash_flows:\n        raise ValueError(\"Cash flows list cannot be empty\")\n    present_value = sum(\n        cash_flow / ((1 + discount_rate) ** i) for i, cash_flow in enumerate(cash_flows)\n    )\n    return round(present_value, ndigits=2)"
+  "code": "def present_value(discount_rate: float, cash_flows: list[float]) -> float:\n    if discount_rate < 0:\n        raise ValueError(\"Discount rate cannot be negative\")\n    if not cash_flows:\n        raise ValueError(\"Cash flows list cannot be empty\")\n    present_value = sum(\n        cash_flow / ((1 + discount_rate) ** i) for i, cash_flow in enumerate(cash_flows)\n    )\n    return round(present_value, ndigits=2)"
  },
  {
   "id": "fractals/sierpinski_triangle.py#triangle",
@@ -2355,7 +2355,7 @@
   "id": "matrix/matrix_operation.py#subtract",
   "path": "matrix/matrix_operation.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/matrix/matrix_operation.py",
-  "code": "def subtract(matrix_a: list[list[int]], matrix_b: list[list[int]]) -> list[list[int]]:\n    \"\"\">>> subtract([[1,2],[3,4]],[[2,3],[4,5]])\"\"\"\n    if (\n        _check_not_integer(matrix_a)\n        and _check_not_integer(matrix_b)\n        and _verify_matrix_sizes(matrix_a, matrix_b)\n    ):\n        return [[i - j for i, j in zip(*m)] for m in zip(matrix_a, matrix_b)]\n    raise TypeError(\"Expected a matrix, got int/list instead\")"
+  "code": "def subtract(matrix_a: list[list[int]], matrix_b: list[list[int]]) -> list[list[int]]:\n    if (\n        _check_not_integer(matrix_a)\n        and _check_not_integer(matrix_b)\n        and _verify_matrix_sizes(matrix_a, matrix_b)\n    ):\n        return [[i - j for i, j in zip(*m)] for m in zip(matrix_a, matrix_b)]\n    raise TypeError(\"Expected a matrix, got int/list instead\")"
  },
  {
   "id": "other/lru_cache.py#DoubleLinkedListNode",
@@ -2367,7 +2367,7 @@
   "id": "physics/first_law_of_thermodynamics.py#work",
   "path": "physics/first_law_of_thermodynamics.py",
   "url": "https://github.com/TheAlgorithms/Python/blob/master/physics/first_law_of_thermodynamics.py",
-  "code": "def work(heat: float, internal_energy_variation: float) -> float:\n    \"\"\">>> work(50.0, -20.0)\"\"\"\n    __check_args(heat)\n    __check_args(internal_energy_variation)\n\n    __categorize_system(heat, \"heat\")\n    __categorize_system(internal_energy_variation, \"internal_energy_variation\")\n\n    work = heat - internal_energy_variation\n    __categorize_system(work, \"work\")\n    return round(work, 1)"
+  "code": "def work(heat: float, internal_energy_variation: float) -> float:\n    __check_args(heat)\n    __check_args(internal_energy_variation)\n\n    __categorize_system(heat, \"heat\")\n    __categorize_system(internal_energy_variation, \"internal_energy_variation\")\n\n    work = heat - internal_energy_variation\n    __categorize_system(work, \"work\")\n    return round(work, 1)"
  },
  {
   "id": "project_euler/problem_007/sol1.py#is_prime",

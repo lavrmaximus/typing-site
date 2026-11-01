@@ -22,7 +22,10 @@ def _docstring_first_line(node):
     first = body[0]
     if isinstance(first, ast.Expr) and isinstance(first.value, ast.Constant) and isinstance(first.value.value, str):
         lines = [l.strip() for l in first.value.value.strip().splitlines() if l.strip()]
-        return first, (lines[0] if lines else "")
+        summary = lines[0] if lines else ""
+        if summary.startswith((">>>", "...")):
+            summary = ""  # a doctest is not a description
+        return first, summary
     return None
 
 

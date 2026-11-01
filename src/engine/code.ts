@@ -1,4 +1,6 @@
-import type { Key } from "./types";
+import { charsMatch, isOptionalSpace } from "./leniency";
+import { tokenizePython } from "./python-tokens";
+import { visible, type Key, type LineView, type Mark, type TokenInfo } from "./types";
 
 export interface CodeState {
   target: string;
@@ -19,6 +21,29 @@ export const createCodeState = (target: string): CodeState => ({ target, buf: ""
 
 const lastLine = (buf: string) => buf.slice(buf.lastIndexOf("\n") + 1);
 
+interface SampleLine { text: string; tokens: TokenInfo[] }
+const sampleCache = new Map<string, SampleLine[]>();
+
+/** The sample split into lines, each with its own token infos (memoised per target). */
+function sampleLines(target: string): SampleLine[] {
+  let lines = sampleCache.get(target);
+  if (!lines) {
+    const tokens = tokenizePython(target);
+    let offset = 0;
+    lines = target.split("\n").map((text) => {
+      const line = { text, tokens: tokens.slice(offset, offset + text.length) };
+      offset += text.length + 1;
+      return line;
+    });
+    if (sampleCache.size > 200) sampleCache.clear();
+    sampleCache.set(target, lines);
+  }
+  return lines;
+}
+
+const matchesAt = (sample: SampleLine | undefined, col: number, typed: string) =>
+  !!sample && col < sample.text.length && charsMatch(typed, sample.text[col], sample.tokens[col].delimiter);
+
 export function codeCursor(s: CodeState): { line: number; col: number } {
   const lines = s.buf.split("\n");
   return { line: lines.length - 1, col: lines[lines.length - 1].length };
@@ -26,12 +51,24 @@ export function codeCursor(s: CodeState): { line: number; col: number } {
 
 /** Was the char just written at (line, col) different from the sample? */
 function wrongAt(s: CodeState, line: number, col: number): boolean {
-  const t = s.target.split("\n")[line];
-  if (t === undefined) return true;
-  return lastLine(s.buf)[col] !== t[col];
+  return !matchesAt(sampleLines(s.target)[line], col, lastLine(s.buf)[col]);
+}
+
+/** If the caret sits on optional spaces and the typed char is what follows them, fill the spaces in. */
+function skipOptionalSpaces(s: CodeState, ch: string): CodeState {
+  if (ch === " ") return s;
+  const { line, col } = codeCursor(s);
+  const sample = sampleLines(s.target)[line];
+  if (!sample || !isOptionalSpace(sample.text, col, sample.tokens)) return s;
+  if (lastLine(s.buf) !== sample.text.slice(0, col)) return s;
+  let end = col;
+  while (sample.text[end] === " ") end++;
+  if (!matchesAt(sample, end, ch)) return s;
+  return { ...s, buf: s.buf + " ".repeat(end - col) };
 }
 
 function typeChar(s: CodeState, ch: string): CodeState {
+  s = skipOptionalSpaces(s, ch);
   let { buf, pending } = s;
   if ((CLOSERS.has(ch) || QUOTES.has(ch)) && pending[0] === ch) {
     buf += ch;
@@ -119,13 +156,62 @@ export function applyCodeKey(s: CodeState, key: Key): CodeState {
   }
 }
 
-const normalize = (text: string) =>
+const rtrimLines = (text: string) =>
   text
+    .replace(/\n+$/, "")
     .split("\n")
-    .map((l) => l.replace(/\s+$/, ""))
-    .join("\n")
-    .replace(/\n+$/, "");
+    .map((l) => l.replace(/\s+$/, ""));
 
 export function isCodeComplete(s: CodeState): boolean {
-  return normalize(s.buf + s.pending) === normalize(s.target);
+  const typed = rtrimLines(s.buf + s.pending);
+  const sample = sampleLines(s.target);
+  const want = rtrimLines(s.target);
+  if (typed.length !== want.length) return false;
+  return want.every((w, k) => {
+    const t = typed[k];
+    if (t.length !== w.length) return false;
+    for (let j = 0; j < w.length; j++) if (!matchesAt(sample[k], j, t[j])) return false;
+    return true;
+  });
+}
+
+/** Render model: one entry per line (sample lines plus any extra typed lines). */
+export function codeView(s: CodeState, tokens: TokenInfo[]): LineView[] {
+  const sample = s.target.split("\n");
+  const starts: number[] = [];
+  sample.reduce((pos, l) => (starts.push(pos), pos + l.length + 1), 0);
+  const docLines = (s.buf + s.pending).split("\n");
+  const { line: cur, col } = codeCursor(s);
+  const lines = sampleLines(s.target);
+  const count = Math.max(sample.length, docLines.length);
+  const view: LineView[] = [];
+  for (let k = 0; k < count; k++) {
+    const t = sample[k];
+    const d = docLines[k] ?? "";
+    const typed = k < cur ? d.length : k === cur ? col : 0;
+    const marks: Mark[] = [];
+    const width = Math.max(t?.length ?? 0, typed);
+    for (let j = 0; j < width; j++) {
+      const tc = t !== undefined && j < t.length ? t[j] : undefined;
+      let mark: Mark;
+      if (j < typed) {
+        if (tc === undefined) mark = { status: "extra", ch: visible(d[j]) };
+        else if (matchesAt(lines[k], j, d[j])) mark = { status: "ok", ch: d[j], token: tokens[starts[k] + j]?.kind };
+        else mark = { status: "err", ch: visible(d[j]), expected: visible(tc) };
+      } else {
+        mark = { status: "todo", ch: tc ?? " " };
+      }
+      if (k === cur && j === col) mark.caret = true;
+      marks.push(mark);
+    }
+    if (k === cur && col >= width) marks.push({ status: "todo", ch: " ", caret: true });
+    view.push({
+      index: k,
+      marks,
+      ghosts: k >= cur ? d.slice(typed) : "",
+      current: k === cur,
+      extra: t === undefined,
+    });
+  }
+  return view;
 }

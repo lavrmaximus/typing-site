@@ -32,6 +32,7 @@ export function CodeWindow({ state, idle }: { state: CodeState; idle: boolean })
   return (
     <>
       <div ref={vp} className={`${styles.viewport} ${styles.code}`}>
+        <div className={styles.clip}>
         <div
           ref={content}
           className={styles.content}
@@ -59,6 +60,7 @@ export function CodeWindow({ state, idle }: { state: CodeState; idle: boolean })
             </div>
           ))}
           <Caret container={content} version={state} line={line} idle={idle} />
+        </div>
         </div>
       </div>
       <div className={`${styles.fade} ${styles.fadeTop}`} style={{ opacity: offset > 0 ? 1 : 0 }} />

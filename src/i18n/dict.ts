@@ -40,6 +40,16 @@ const ru = {
   hintBackspace: "на отступе стирает 4 пробела",
   hintSpaces: "пробелы вокруг операторов можно пропускать",
   hintEsc: "заново",
+  literature: "Литература",
+  words: "Слова",
+  anotherText: "Другой текст",
+  phoneInput: "Ввод с телефона",
+  layoutWarning: "Похоже, включена английская раскладка. Переключите на русскую.",
+  hintFix: "исправить",
+  hintWord: "стереть слово",
+  hintAutocorrect: "автозамена работает",
+  hintSwipe: "можно вводить свайпом",
+  hintSpaceWord: "слово проверяется целиком",
   footerContent: "Код — TheAlgorithms/Python (MIT). Литература — общественное достояние (Викитека, Project Gutenberg). Частотные слова — FrequencyWords (CC BY-SA 4.0).",
 };
 
@@ -74,6 +84,16 @@ const en: Dict = {
   hintBackspace: "on indent deletes 4 spaces",
   hintSpaces: "spaces around operators are optional",
   hintEsc: "restart",
+  literature: "Literature",
+  words: "Words",
+  anotherText: "Another text",
+  phoneInput: "Phone input",
+  layoutWarning: "Looks like a non-English layout is on. Switch to English.",
+  hintFix: "fix",
+  hintWord: "delete word",
+  hintAutocorrect: "autocorrect works",
+  hintSwipe: "swipe typing works",
+  hintSpaceWord: "each word is checked whole",
   footerContent: "Code from TheAlgorithms/Python (MIT). Literature in the public domain (Wikisource, Project Gutenberg). Frequency words from FrequencyWords (CC BY-SA 4.0).",
 };
 

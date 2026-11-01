@@ -31,3 +31,7 @@ export async function typeLikeHuman(page: Page, code: string) {
     }
   }
 }
+
+export interface Passage { id: string; text: string }
+export const passagesRu: Passage[] = JSON.parse(readFileSync("content/texts.ru.json", "utf8"));
+export const passagesEn: Passage[] = JSON.parse(readFileSync("content/texts.en.json", "utf8"));

@@ -11,6 +11,8 @@ npm install
 npm run dev          # http://localhost:3000 → /ru/code или /en/code по языку браузера
 ```
 
+Сайт полностью статический: `npm run build` собирает его в папку `out/`, которую раздаёт nginx без Node.js — см. [DEPLOY.md](DEPLOY.md). `npm start` раздаёт собранную папку локально.
+
 ## Проверки
 
 ```bash
@@ -24,7 +26,8 @@ python3 -m unittest scripts/content/test_extract_snippets.py
 
 - `src/engine/` — чистый TypeScript без React: сессия кода (правила редактора, допустимые вольности), сессия текста, ввод с телефона по словам, метрики и цвет подсветки.
 - `src/ui/` — React-компоненты в стиле «Клавиши · Подсветка»; подсветка корпуса меняет оттенок со скоростью.
-- `src/app/[lang]/` — страницы `/ru|en/code` и `/ru|en/text`; `src/proxy.ts` перенаправляет `/` по Accept-Language.
+- `src/app/[lang]/` — страницы `/ru|en/code` и `/ru|en/text`; `/`, `/ru`, `/en` перенаправляют в браузере (последняя открытая страница или язык браузера).
+- `deploy/` — конфиг nginx и скрипт обновления сервера; `.github/workflows/build-site.yml` собирает сайт в ветку `site`.
 - `content/` — готовые JSON-файлы с контентом и `SOURCES.md` с лицензиями.
 
 ## Обновление контента

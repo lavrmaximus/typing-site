@@ -45,3 +45,6 @@ next-env.d.ts
 .cache/
 /test-results/
 /playwright-report/
+
+# python
+__pycache__/

@@ -1,7 +1,7 @@
 #!/bin/sh
 # Pulls the latest built site (the `site` branch) into the nginx folder.
-# First run:  sudo sh update-site.sh https://github.com/<owner>/<repo>.git
-# Later runs: sudo sh update-site.sh            (or from cron, see DEPLOY.md)
+# Usually lives in the site itself: sudo sh /var/www/ritm/.deploy/update-site.sh
+# Fresh server: sudo sh update-site.sh https://github.com/lavrmaximus/typing-site.git
 set -eu
 DIR=${RITM_DIR:-/var/www/ritm}
 REPO=${1:-}

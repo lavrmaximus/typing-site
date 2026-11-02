@@ -32,6 +32,8 @@ jobs:
 
       - name: Publish out/ to the site branch
         run: |
+          mkdir -p out/.deploy
+          cp deploy/nginx.conf deploy/update-site.sh DEPLOY.md out/.deploy/
           cd out
           touch .nojekyll
           git init -q -b site

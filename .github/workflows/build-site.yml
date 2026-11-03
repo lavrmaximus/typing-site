@@ -25,6 +25,15 @@ jobs:
           node-version: 22
           cache: npm
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: API tests
+        run: |
+          python -m pip install -q -r backend/requirements-dev.txt
+          cd backend && python -m pytest -q
+
       - run: npm ci
       - run: npm run lint
       - run: npm test
@@ -33,7 +42,8 @@ jobs:
       - name: Publish out/ to the site branch
         run: |
           mkdir -p out/.deploy
-          cp deploy/nginx.conf deploy/update-site.sh DEPLOY.md out/.deploy/
+          cp deploy/nginx.conf deploy/update-site.sh deploy/setup-api.sh deploy/ritm-api.service deploy/api.env.example DEPLOY.md out/.deploy/
+          rsync -a --exclude tests --exclude __pycache__ --exclude .pytest_cache --exclude "*.db*" backend/ out/.deploy/backend/
           cd out
           touch .nojekyll
           git init -q -b site

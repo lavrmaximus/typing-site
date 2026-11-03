@@ -22,7 +22,8 @@ class Settings:
     db_path: str = field(default_factory=lambda: os.environ.get("RITM_DB", "ritm.db"))
     telegram_bot_token: str | None = field(default_factory=lambda: os.environ.get("RITM_TELEGRAM_BOT_TOKEN") or None)
     telegram_bot_name: str | None = field(default_factory=lambda: os.environ.get("RITM_TELEGRAM_BOT_NAME") or None)
-    cookie_secure: bool = field(default_factory=lambda: os.environ.get("RITM_COOKIE_SECURE", "1") != "0")
+    # None = auto: Secure exactly when the request arrived over HTTPS (behind nginx: X-Forwarded-Proto)
+    cookie_secure: bool | None = field(default_factory=lambda: {"1": True, "0": False}.get(os.environ.get("RITM_COOKIE_SECURE", "auto")))
     session_days: int = 30
 
 
@@ -62,11 +63,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app = FastAPI(title="ritm API", docs_url=None, redoc_url=None, openapi_url=None)
     app.state.db = db
 
-    def start_session(response: Response, user_id: int) -> None:
+    def start_session(response: Response, user_id: int, request: Request) -> None:
         token, h = new_token()
         max_age = s.session_days * 86400
         db.execute("insert into sessions(token_hash, user_id, expires_at) values (?,?,?)", (h, user_id, int(time.time()) + max_age))
-        response.set_cookie(COOKIE, token, max_age=max_age, httponly=True, samesite="lax", secure=s.cookie_secure, path="/")
+        response.set_cookie(COOKIE, token, max_age=max_age, httponly=True, samesite="lax", secure=request.url.scheme == "https" if s.cookie_secure is None else s.cookie_secure, path="/")
 
     def current_user_id(ritm_session: str | None = Cookie(default=None)) -> int | None:
         if not ritm_session:
@@ -100,14 +101,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return {"telegramBot": s.telegram_bot_name if s.telegram_bot_token else None}
 
     @app.post("/api/auth/register", status_code=201)
-    def register(body: Credentials, response: Response):
+    def register(body: Credentials, request: Request, response: Response):
         if db.execute("select 1 from users where username_key=?", (body.username.lower(),)).fetchone():
             raise HTTPException(409, "username taken")
         cur = db.execute(
             "insert into users(username, username_key, password_hash, created_at) values (?,?,?,?)",
             (body.username, body.username.lower(), hash_password(body.password), int(time.time())),
         )
-        start_session(response, cur.lastrowid)
+        start_session(response, cur.lastrowid, request)
         return me_payload(cur.lastrowid)
 
     @app.post("/api/auth/login")
@@ -119,11 +120,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         if not row or not verify_password(body.password, row[1]):
             throttle.fail(key)
             raise HTTPException(401, "wrong username or password")
-        start_session(response, row[0])
+        start_session(response, row[0], request)
         return me_payload(row[0])
 
     @app.post("/api/auth/telegram")
-    def telegram(data: dict = Body(...), response: Response = None, uid: int | None = Depends(current_user_id)):
+    def telegram(request: Request, response: Response, data: dict = Body(...), uid: int | None = Depends(current_user_id)):
         if not s.telegram_bot_token:
             raise HTTPException(404, "telegram login is not configured")
         if not check_telegram(data, s.telegram_bot_token):
@@ -144,7 +145,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 "insert into users(username, username_key, telegram_id, telegram_username, created_at) values (?,?,?,?,?)",
                 (name, name.lower(), tg_id, tg_user, int(time.time())),
             ).lastrowid
-        start_session(response, user_id)
+        start_session(response, user_id, request)
         return me_payload(user_id)
 
     @app.post("/api/auth/logout")

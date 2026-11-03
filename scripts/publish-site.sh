@@ -5,7 +5,8 @@
 set -eu
 npm run build
 mkdir -p out/.deploy
-cp deploy/nginx.conf deploy/update-site.sh DEPLOY.md out/.deploy/
+cp deploy/nginx.conf deploy/update-site.sh deploy/setup-api.sh deploy/ritm-api.service deploy/api.env.example DEPLOY.md out/.deploy/
+rsync -a --exclude tests --exclude __pycache__ --exclude .pytest_cache --exclude "*.db*" backend/ out/.deploy/backend/
 touch out/.nojekyll
 URL=$(git remote get-url origin)
 SHA=$(git rev-parse --short HEAD)

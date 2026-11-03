@@ -55,3 +55,14 @@ def test_session_cookie_flags(client):
     r = register(client)
     cookie = r.headers["set-cookie"].lower()
     assert "httponly" in cookie and "samesite=lax" in cookie and "path=/" in cookie
+
+
+def test_cookie_is_secure_only_over_https_in_auto_mode(tmp_path):
+    from fastapi.testclient import TestClient
+    from ritm_api.main import Settings, create_app
+
+    app = create_app(Settings(db_path=str(tmp_path / "a.db"), cookie_secure=None))
+    plain = TestClient(app, base_url="http://typing.example").post("/api/auth/register", json={"username": "ann", "password": "secret123"})
+    assert "secure" not in plain.headers["set-cookie"].lower()
+    https = TestClient(app, base_url="https://typing.example").post("/api/auth/register", json={"username": "bea", "password": "secret123"})
+    assert "secure" in https.headers["set-cookie"].lower()

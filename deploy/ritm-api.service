@@ -1,0 +1,23 @@
+# systemd service for the ritm API (FastAPI + SQLite). Installed by setup-api.sh.
+[Unit]
+Description=ritm API (accounts and statistics)
+After=network.target
+
+[Service]
+User=ritm
+Group=ritm
+WorkingDirectory=/var/www/ritm/.deploy/backend
+EnvironmentFile=/etc/ritm/api.env
+ExecStart=/opt/ritm/venv/bin/uvicorn ritm_api.main:create_app --factory --host 127.0.0.1 --port 8000 --workers 1 --proxy-headers --forwarded-allow-ips 127.0.0.1 --no-server-header
+Restart=always
+RestartSec=3
+# hardening: the service can only write its database folder
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/ritm
+MemoryMax=200M
+
+[Install]
+WantedBy=multi-user.target

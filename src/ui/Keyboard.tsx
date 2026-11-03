@@ -23,6 +23,8 @@ interface Props {
   fingers?: boolean;
   /** keys of the current lesson get a ring */
   focus?: string[];
+  /** statistics: key id -> 0..1 share of mistakes (tinted from cap colour to the error colour) */
+  heat?: Record<string, number>;
 }
 
 const LEFT_HAND = (id: string) => {
@@ -34,7 +36,7 @@ const LEFT_HAND = (id: string) => {
 };
 
 /** On-screen keyboard: dips the key of each keystroke; in course mode shows the next key and fingers. */
-export function Keyboard({ press, primary = "en", hint = null, fingers = false, focus = [] }: Props) {
+export function Keyboard({ press, primary = "en", hint = null, fingers = false, focus = [], heat }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!press || !ref.current) return;
@@ -56,6 +58,8 @@ export function Keyboard({ press, primary = "en", hint = null, fingers = false, 
       className={`${styles.key} ${extra} ${fingers && finger !== null ? styles[`f${finger}`] : ""} ${focusIds.has(id) ? styles.focus : ""}`}
       data-k={id}
       data-next={hint?.id === id || shiftId === id || undefined}
+      data-heat={heat?.[id] ? heat[id].toFixed(2) : undefined}
+      style={heat?.[id] ? { background: `color-mix(in srgb, var(--err) ${Math.round(12 + heat[id] * 70)}%, var(--cap))` } : undefined}
     >
       <span className={styles.l}>{label}</span>
       {legend && <span className={styles.c}>{legend}</span>}

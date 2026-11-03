@@ -24,6 +24,7 @@ export function Shell({ lang, mode, children }: { lang: Lang; mode: Mode; childr
           <KeyLink href={`/${lang}/code`} pressed={mode === "code"}>{d.navCode}</KeyLink>
           <KeyLink href={`/${lang}/text`} pressed={mode === "text"}>{d.navText}</KeyLink>
           <KeyLink href={`/${lang}/course`} pressed={mode === "course"}>{d.navCourse}</KeyLink>
+          <KeyLink href={`/${lang}/stats`} pressed={mode === "stats"}>{d.navStats}</KeyLink>
         </nav>
         <div className={styles.group}>
           <nav className={styles.group} aria-label={d.langSwitch}>

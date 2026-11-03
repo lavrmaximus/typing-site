@@ -140,7 +140,7 @@ function KeySession({ text, contentId, lang, d, keyboard, onRestart }: { text: s
   }), [text]);
   const session = useTypingSession(engine, lang === "ru" ? "cpm" : "wpm");
   useRecordOnDone(session.done, () => ({
-    at: Date.now(), mode: contentId ? "lit" : "words", lang, cpm: session.cpm, accuracy: session.accuracy, errors: session.errors,
+    mode: contentId ? "lit" : "words", lang, cpm: session.cpm, accuracy: session.accuracy, errors: session.errors,
     durationMs: Math.round(session.elapsedMs), chars: textCorrectChars(session.state), contentId, missed: session.state.missed,
   }));
   const [toast, setToast] = useState(false);
@@ -216,7 +216,7 @@ function PhoneSession({ text, contentId, lang, d, capitalize, onRestart }: { tex
   const field = useRef<HTMLTextAreaElement>(null);
   const view = useMemo(() => phoneView(text, session.state.field), [text, session.state.field]);
   useRecordOnDone(session.done, () => ({
-    at: Date.now(), mode: contentId ? "lit" : "words", lang, cpm: session.cpm, accuracy: session.accuracy, errors: session.errors,
+    mode: contentId ? "lit" : "words", lang, cpm: session.cpm, accuracy: session.accuracy, errors: session.errors,
     durationMs: Math.round(session.elapsedMs), chars: view.correctChars, contentId, missed: {},
   }));
   useEffect(() => { if (session.done) field.current?.blur(); }, [session.done]);

@@ -13,7 +13,7 @@
 .mod { flex-grow: 1.5; background: var(--mod); color: var(--mod-ink); }
 .mod .l { font-size: 10px; }
 .space { flex-grow: 6.5; }
-.esc { background: var(--acc); color: var(--acc-ink); box-shadow: 0 var(--depth) 0 var(--acc-edge); transition: background-color 0.6s; }
+.esc { background: color-mix(in srgb, var(--acc) 70%, var(--cap)); color: var(--acc-ink); box-shadow: 0 var(--depth) 0 var(--acc-edge); transition: background-color 0.6s; }
 .home::after { content: ""; position: absolute; left: 8px; bottom: 6px; width: 10px; height: 2px; border-radius: 2px; background: var(--cap-mute); }
 .down {
   transform: translateY(calc(var(--depth) - 1px));
@@ -27,3 +27,18 @@
   .c, .mod .l { display: none; }
   .l { left: 50%; transform: translateX(-50%); top: 7px; font-size: 11px; }
 }
+
+/* course mode: finger zones (mirrored hands share a tint), lesson keys, next key */
+.f0, .f7 { background: color-mix(in srgb, #b69cff 18%, var(--cap)); }
+.f1, .f6 { background: color-mix(in srgb, #7fb4ff 18%, var(--cap)); }
+.f2, .f5 { background: color-mix(in srgb, #6fd6df 18%, var(--cap)); }
+.f3, .f4 { background: color-mix(in srgb, #8fe3b0 18%, var(--cap)); }
+.focus { box-shadow: 0 var(--depth) 0 var(--cap-edge), inset 0 0 0 1.5px color-mix(in srgb, var(--acc) 60%, transparent); }
+.key[data-next] {
+  background: var(--acc); color: var(--acc-ink); border-color: var(--acc);
+  transform: translateY(-2px);
+  box-shadow: 0 var(--depth) 0 var(--acc-edge), 0 8px 18px -6px var(--acc);
+  animation: nextPulse 1.4s var(--ease) infinite;
+}
+.key[data-next] .c { color: color-mix(in srgb, var(--acc-ink) 60%, transparent); }
+@keyframes nextPulse { 50% { box-shadow: 0 var(--depth) 0 var(--acc-edge), 0 8px 26px -4px var(--acc); } }

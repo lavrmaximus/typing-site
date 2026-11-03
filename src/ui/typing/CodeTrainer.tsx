@@ -101,7 +101,7 @@ function CodeSession({ id, code, lang, d, onRestart }: { id: string; code: strin
   const capture = useCaptureInput({ onKey: session.onKey, onRestart, done: session.done, editor: true });
   const [prefs] = usePrefs();
   useRecordOnDone(session.done, () => ({
-    at: Date.now(), mode: "code", lang, cpm: session.cpm, accuracy: session.accuracy, errors: session.errors,
+    mode: "code", lang, cpm: session.cpm, accuracy: session.accuracy, errors: session.errors,
     durationMs: Math.round(session.elapsedMs), chars: codeCorrectChars(session.state), contentId: id, missed: session.state.missed,
   }));
   const { focus } = capture;

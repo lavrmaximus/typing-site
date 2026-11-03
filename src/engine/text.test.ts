@@ -37,3 +37,8 @@ test("enter and tab are ignored", () => {
   const s = applyTextKey(applyTextKey(createTextState("a"), { kind: "enter", ctrl: false }), { kind: "tab" });
   expect(s.buf).toBe("");
 });
+
+test("records which expected characters were missed", () => {
+  const s = typeText(createTextState("аб в"), "ап_в");
+  expect(s.missed).toEqual({ "б": 1, " ": 1 });
+});

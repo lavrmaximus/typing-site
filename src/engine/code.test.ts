@@ -139,3 +139,8 @@ test("ctrl+backspace also removes the auto-pairs of deleted openers", () => {
   s = applyCodeKey(s, { kind: "backspace", word: true });
   expect(s.pending).toBe(")");
 });
+
+test("records missed sample characters", () => {
+  const s = type(createCodeState("ab\ncd"), "xb\ncz");
+  expect(s.missed).toEqual({ a: 1, d: 1 });
+});

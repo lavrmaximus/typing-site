@@ -5,15 +5,27 @@ export interface TextState {
   buf: string;
   keys: number;
   errors: number;
+  /** expected character -> how many times it was mistyped */
+  missed: Record<string, number>;
 }
 
-export const createTextState = (target: string): TextState => ({ target, buf: "", keys: 0, errors: 0 });
+export const createTextState = (target: string): TextState => ({ target, buf: "", keys: 0, errors: 0, missed: {} });
+
+export const addMiss = (missed: Record<string, number>, ch: string | undefined) =>
+  ch === undefined ? missed : { ...missed, [ch]: (missed[ch] ?? 0) + 1 };
 
 export function applyTextKey(s: TextState, key: Key): TextState {
   if (key.kind === "char") {
     if (s.buf.length >= s.target.length) return s;
-    const wrong = key.ch !== s.target[s.buf.length];
-    return { ...s, buf: s.buf + key.ch, keys: s.keys + 1, errors: s.errors + (wrong ? 1 : 0) };
+    const want = s.target[s.buf.length];
+    const wrong = key.ch !== want;
+    return {
+      ...s,
+      buf: s.buf + key.ch,
+      keys: s.keys + 1,
+      errors: s.errors + (wrong ? 1 : 0),
+      missed: wrong ? addMiss(s.missed, want) : s.missed,
+    };
   }
   if (key.kind === "backspace") {
     if (!s.buf) return s;

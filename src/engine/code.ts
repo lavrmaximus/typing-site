@@ -10,6 +10,8 @@ export interface CodeState {
   pending: string;
   keys: number;
   errors: number;
+  /** sample character -> how many times it was mistyped */
+  missed: Record<string, number>;
 }
 
 const PAIRS: Record<string, string> = { "(": ")", "[": "]", "{": "}" };
@@ -17,7 +19,7 @@ const CLOSERS = new Set([")", "]", "}"]);
 const QUOTES = new Set(['"', "'"]);
 const INDENT = 4;
 
-export const createCodeState = (target: string): CodeState => ({ target, buf: "", pending: "", keys: 0, errors: 0 });
+export const createCodeState = (target: string): CodeState => ({ target, buf: "", pending: "", keys: 0, errors: 0, missed: {} });
 
 const lastLine = (buf: string) => buf.slice(buf.lastIndexOf("\n") + 1);
 
@@ -106,7 +108,9 @@ function typeChar(s: CodeState, ch: string): CodeState {
   }
   const next = { ...s, buf, pending, keys: s.keys + 1 };
   const { line, col } = codeCursor(next);
-  return wrongAt(next, line, col - 1) ? { ...next, errors: next.errors + 1 } : next;
+  if (!wrongAt(next, line, col - 1)) return next;
+  const want = s.target.split("\n")[line]?.[col - 1];
+  return { ...next, errors: next.errors + 1, missed: want === undefined ? next.missed : { ...next.missed, [want]: (next.missed[want] ?? 0) + 1 } };
 }
 
 function indentFor(line: string): string {

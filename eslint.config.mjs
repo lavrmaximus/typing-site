@@ -16,6 +16,8 @@ const eslintConfig = defineConfig([
     "docs/**",
     ".superpowers/**",
     ".cache/**",
+    ".venv-api/**",
+    "backend/**",
   ]),
 ]);
 

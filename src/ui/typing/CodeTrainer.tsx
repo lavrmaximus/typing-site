@@ -16,6 +16,7 @@ import { Hints } from "./Hints";
 import { ResultPanel } from "./ResultPanel";
 import { useCaptureInput } from "./useCaptureInput";
 import { useTypingSession, type Engine } from "./useTypingSession";
+import { useRecordOnDone } from "./useRecordOnDone";
 import styles from "./Typing.module.css";
 
 const loadSnippets = () => import("../../../content/snippets.json").then((m) => m.default as Snippet[]);
@@ -73,7 +74,7 @@ export function CodeTrainer({ lang, d }: { lang: Lang; d: Dict }) {
         </div>
       </div>
       {snippet
-        ? <CodeSession key={`${snippet.id}:${attempt}`} code={snippet.code} lang={lang} d={d} onRestart={() => setAttempt((a) => a + 1)} />
+        ? <CodeSession key={`${snippet.id}:${attempt}`} id={snippet.id} code={snippet.code} lang={lang} d={d} onRestart={() => setAttempt((a) => a + 1)} />
         : <Device glowCpm={0} screen={<div className={`${styles.viewport} ${styles.code}`} />} />}
       <Hints items={[
         ["( [ { \" '", d.hintPairs],
@@ -87,7 +88,7 @@ export function CodeTrainer({ lang, d }: { lang: Lang; d: Dict }) {
   );
 }
 
-function CodeSession({ code, lang, d, onRestart }: { code: string; lang: Lang; d: Dict; onRestart: () => void }) {
+function CodeSession({ id, code, lang, d, onRestart }: { id: string; code: string; lang: Lang; d: Dict; onRestart: () => void }) {
   const engine = useMemo<Engine<CodeState>>(() => ({
     create: () => createCodeState(code),
     apply: applyCodeKey,
@@ -99,6 +100,10 @@ function CodeSession({ code, lang, d, onRestart }: { code: string; lang: Lang; d
   const session = useTypingSession(engine, lang === "ru" ? "cpm" : "wpm");
   const capture = useCaptureInput({ onKey: session.onKey, onRestart, done: session.done, editor: true });
   const [prefs] = usePrefs();
+  useRecordOnDone(session.done, () => ({
+    at: Date.now(), mode: "code", lang, cpm: session.cpm, accuracy: session.accuracy, errors: session.errors,
+    durationMs: Math.round(session.elapsedMs), chars: codeCorrectChars(session.state), contentId: id, missed: session.state.missed,
+  }));
   const { focus } = capture;
   // take focus on start, unless the visitor has already put it somewhere else
   useEffect(() => {

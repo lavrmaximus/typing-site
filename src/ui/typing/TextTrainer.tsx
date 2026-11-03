@@ -18,6 +18,7 @@ import { ResultPanel } from "./ResultPanel";
 import { TextWindow } from "./TextWindow";
 import { useCaptureInput } from "./useCaptureInput";
 import { useTypingSession, type Engine } from "./useTypingSession";
+import { useRecordOnDone } from "./useRecordOnDone";
 import styles from "./Typing.module.css";
 
 interface Content { passages: Passage[]; words: string[] }
@@ -110,8 +111,8 @@ export function TextTrainer({ lang, d }: { lang: Lang; d: Dict }) {
       </div>
       {target ? (
         phone
-          ? <PhoneSession key={`p:${attempt}:${target.text}`} text={target.text} lang={lang} d={d} capitalize={prefs.textKind === "lit"} onRestart={() => setAttempt((a) => a + 1)} />
-          : <KeySession key={`k:${attempt}:${target.text}`} text={target.text} lang={lang} d={d} keyboard={prefs.keyboard} onRestart={() => setAttempt((a) => a + 1)} />
+          ? <PhoneSession key={`p:${attempt}:${target.text}`} text={target.text} contentId={target.passage?.id ?? null} lang={lang} d={d} capitalize={prefs.textKind === "lit"} onRestart={() => setAttempt((a) => a + 1)} />
+          : <KeySession key={`k:${attempt}:${target.text}`} text={target.text} contentId={target.passage?.id ?? null} lang={lang} d={d} keyboard={prefs.keyboard} onRestart={() => setAttempt((a) => a + 1)} />
       ) : (
         <Device glowCpm={0} screen={<div className={`${styles.viewport} ${styles.text}`} />} />
       )}
@@ -128,7 +129,7 @@ export function TextTrainer({ lang, d }: { lang: Lang; d: Dict }) {
 const CYR = /[а-яё]/i;
 const LAT = /[a-z]/i;
 
-function KeySession({ text, lang, d, keyboard, onRestart }: { text: string; lang: Lang; d: Dict; keyboard: boolean; onRestart: () => void }) {
+function KeySession({ text, contentId, lang, d, keyboard, onRestart }: { text: string; contentId: string | null; lang: Lang; d: Dict; keyboard: boolean; onRestart: () => void }) {
   const engine = useMemo<Engine<TextState>>(() => ({
     create: () => createTextState(text),
     apply: applyTextKey,
@@ -138,6 +139,10 @@ function KeySession({ text, lang, d, keyboard, onRestart }: { text: string; lang
     errors: (s) => s.errors,
   }), [text]);
   const session = useTypingSession(engine, lang === "ru" ? "cpm" : "wpm");
+  useRecordOnDone(session.done, () => ({
+    at: Date.now(), mode: contentId ? "lit" : "words", lang, cpm: session.cpm, accuracy: session.accuracy, errors: session.errors,
+    durationMs: Math.round(session.elapsedMs), chars: textCorrectChars(session.state), contentId, missed: session.state.missed,
+  }));
   const [toast, setToast] = useState(false);
   const lastToast = useRef(0);
   const onKey = (k: Key) => {
@@ -198,7 +203,7 @@ const caretToEnd = (el: HTMLTextAreaElement | null) => {
   if (el.selectionStart !== n || el.selectionEnd !== n) el.setSelectionRange(n, n);
 };
 
-function PhoneSession({ text, lang, d, capitalize, onRestart }: { text: string; lang: Lang; d: Dict; capitalize: boolean; onRestart: () => void }) {
+function PhoneSession({ text, contentId, lang, d, capitalize, onRestart }: { text: string; contentId: string | null; lang: Lang; d: Dict; capitalize: boolean; onRestart: () => void }) {
   const engine = useMemo<Engine<PhoneState>>(() => ({
     create: () => ({ target: text, field: "" }),
     apply: (s) => s,
@@ -210,6 +215,10 @@ function PhoneSession({ text, lang, d, capitalize, onRestart }: { text: string; 
   const session = useTypingSession(engine, lang === "ru" ? "cpm" : "wpm");
   const field = useRef<HTMLTextAreaElement>(null);
   const view = useMemo(() => phoneView(text, session.state.field), [text, session.state.field]);
+  useRecordOnDone(session.done, () => ({
+    at: Date.now(), mode: contentId ? "lit" : "words", lang, cpm: session.cpm, accuracy: session.accuracy, errors: session.errors,
+    durationMs: Math.round(session.elapsedMs), chars: view.correctChars, contentId, missed: {},
+  }));
   useEffect(() => { if (session.done) field.current?.blur(); }, [session.done]);
   useEffect(() => {
     const onSel = () => { if (document.activeElement === field.current) caretToEnd(field.current); };

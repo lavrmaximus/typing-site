@@ -48,3 +48,7 @@ next-env.d.ts
 
 # python
 __pycache__/
+
+# backend
+.venv-api/
+*.db

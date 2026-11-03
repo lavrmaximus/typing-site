@@ -46,3 +46,11 @@ test("device glows with a hue variable", async ({ page }) => {
   const hue = await page.getByTestId("device").evaluate((el) => getComputedStyle(el).getPropertyValue("--glow-h").trim());
   expect(hue).toBe("205");
 });
+
+test("theme survives a root re-render that drops the attribute", async ({ page }) => {
+  await page.goto("/ru/code");
+  await page.getByTestId("stage").waitFor();
+  const before = await page.locator("html").getAttribute("data-theme");
+  await page.evaluate(() => document.documentElement.removeAttribute("data-theme"));
+  await expect(page.locator("html")).toHaveAttribute("data-theme", before!);
+});

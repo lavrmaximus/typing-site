@@ -11,8 +11,24 @@ export const THEME_INIT = `(function(){try{var t=localStorage.getItem("${THEME_K
 type Theme = "light" | "dark";
 
 const readTheme = (): Theme => (document.documentElement.dataset.theme === "light" ? "light" : "dark");
+/** The saved theme, else the system preference. */
+function preferred(): Theme {
+  try {
+    const t = localStorage.getItem(THEME_KEY);
+    if (t === "light" || t === "dark") return t;
+  } catch { /* storage blocked */ }
+  return matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+}
+
 function subscribe(onChange: () => void) {
-  const obs = new MutationObserver(onChange);
+  // If React re-renders the root <html> (e.g. after a hydration bail-out) the
+  // attribute set by THEME_INIT is dropped: put it back right away.
+  const restore = () => {
+    if (!document.documentElement.dataset.theme) document.documentElement.dataset.theme = preferred();
+    onChange();
+  };
+  restore();
+  const obs = new MutationObserver(restore);
   obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
   return () => obs.disconnect();
 }

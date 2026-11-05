@@ -53,6 +53,22 @@ jobs:
           git commit -q -m "Build of ${GITHUB_SHA::7}"
           git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" site
 
+      # Instant redeploy: the server key can only run update-site.sh (forced command).
+      # Needs secrets DEPLOY_HOST and DEPLOY_SSH_KEY; skipped when they are not set.
+      - name: Deploy to the server
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          if [ -z "$DEPLOY_HOST" ] || [ -z "$DEPLOY_SSH_KEY" ]; then
+            echo "DEPLOY_HOST / DEPLOY_SSH_KEY not set, skipping deploy"; exit 0
+          fi
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          echo "$DEPLOY_HOST ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIY1kNKlBMWPXypM3t63F7a4xvqX4UGOJ+B5o+iYzaUS" > ~/.ssh/known_hosts
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes "root@$DEPLOY_HOST" deploy
+
       - uses: actions/upload-artifact@v4
         with:
           name: site

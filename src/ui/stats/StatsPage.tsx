@@ -1,20 +1,28 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { useAccount } from "@/account/account";
 import { summarize } from "@/account/stats";
-import { RESULT_MODES, type ResultMode } from "@/account/types";
+import { inputOf, RESULT_MODES, type ResultInput, type ResultMode } from "@/account/types";
 import { keyFor } from "@/course/layout";
 import { lessonsFor } from "@/course/lessons";
 import type { Dict, Lang } from "@/i18n/dict";
+import { KeyButton } from "../KeyCap";
 import { Keyboard } from "../Keyboard";
+import { useCoarsePointer } from "../useCoarsePointer";
+import { usePrefs } from "../usePrefs";
 import { useResults } from "../course/useResults";
 import { SpeedChart } from "./SpeedChart";
 import styles from "./Stats.module.css";
 
 export function StatsPage({ lang, d }: { lang: Lang; d: Dict }) {
   const { status } = useAccount();
-  const results = useResults(lang);
+  const all = useResults(lang);
+  const [prefs] = usePrefs();
+  const coarse = useCoarsePointer();
+  const [picked, setPicked] = useState<ResultInput | null>(null);
+  const input: ResultInput = picked ?? ((prefs.phone ?? coarse) ? "phone" : "keys");
   const show = (cpm: number) => (lang === "en" ? Math.round(cpm / 5) : cpm);
   const modeName = (m: string) => ({ code: d.modeCode, lit: d.modeLit, words: d.modeWords, lesson: d.modeLesson })[m as ResultMode] ?? m;
   const fmt = new Intl.DateTimeFormat(lang === "ru" ? "ru-RU" : "en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
@@ -26,8 +34,25 @@ export function StatsPage({ lang, d }: { lang: Lang; d: Dict }) {
       {status === "guest" && <p className={styles.note}>{d.statsGuest} <Link href={`/${lang}/account`}>{d.signIn}</Link></p>}
     </>
   );
-  if (!results) return head;
-  if (!results.length) return <>{head}<div className={`${styles.panel} ${styles.empty}`} data-testid="stats-empty">{d.statsEmpty}</div></>;
+  if (!all) return head;
+  if (!all.length) return <>{head}<div className={`${styles.panel} ${styles.empty}`} data-testid="stats-empty">{d.statsEmpty}</div></>;
+
+  const counts = { keys: 0, phone: 0 };
+  for (const r of all) counts[inputOf(r)]++;
+  const results = all.filter((r) => inputOf(r) === input);
+  const switcher = (
+    <div className={styles.inputs}>
+      <div className={styles.switch} role="group" aria-label={d.inputSplitNote}>
+        {(["keys", "phone"] as const).map((k) => (
+          <KeyButton key={k} pressed={input === k} onClick={() => setPicked(k)} data-testid={`input-${k}`}>
+            {k === "keys" ? d.inputKeys : d.inputPhone} · {counts[k]}
+          </KeyButton>
+        ))}
+      </div>
+      <p className={styles.note}>{d.inputSplitNote}</p>
+    </div>
+  );
+  if (!results.length) return <>{head}{switcher}<div className={`${styles.panel} ${styles.empty}`} data-testid="stats-empty-input">{d.statsEmptyInput}</div></>;
 
   const s = summarize(results);
   const minutes = Math.round(s.totalMs / 60000);
@@ -41,12 +66,15 @@ export function StatsPage({ lang, d }: { lang: Lang; d: Dict }) {
     if (id) heat[id] = Math.min(1, (heat[id] ?? 0) + n / maxMiss);
   }
   const lessons = lessonsFor(lang);
-  const passed = lessons.filter((l) => (s.lessons[l.id]?.stars ?? 0) > 0).length;
+  // a lesson passed counts whatever it was typed on
+  const progress = summarize(all).lessons;
+  const passed = lessons.filter((l) => (progress[l.id]?.stars ?? 0) > 0).length;
   const recent = [...results].sort((a, b) => b.at - a.at).slice(0, 20);
 
   return (
     <>
       {head}
+      {switcher}
       <div className={styles.tiles}>
         <div className={`${styles.tile} ${styles.hero}`}><b>{show(s.bestCpm)}</b><span>{d.tileBest}, {d.unit}</span></div>
         <div className={styles.tile}><b>{show(s.avgCpm)}</b><span>{d.tileAvg}</span></div>

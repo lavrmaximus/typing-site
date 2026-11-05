@@ -9,6 +9,11 @@ export interface PhoneView {
   done: boolean;
 }
 
+/** Phone keyboards swap е and ё on their own (autocorrect, suggestions), so the two count as one letter. */
+const fold = (ch: string) => (ch === "ё" ? "е" : ch === "Ё" ? "Е" : ch);
+const sameChar = (a: string, b: string) => fold(a) === fold(b);
+const sameWord = (a: string, b: string) => a.length === b.length && [...a].every((ch, i) => sameChar(ch, b[i]));
+
 /**
  * Phone input: the text field's value is the source of truth (autocorrect and
  * swipe typing rewrite it freely). Finished words are judged whole; the word
@@ -26,7 +31,7 @@ export function phoneView(target: string, field: string): PhoneView {
 
   want.forEach((w, i) => {
     if (i < finished.length) {
-      const ok = finished[i] === w;
+      const ok = sameWord(finished[i], w);
       if (ok) correctChars += w.length + 1;
       else wrongWords++;
       [...w].forEach((ch, j) => {
@@ -39,10 +44,10 @@ export function phoneView(target: string, field: string): PhoneView {
         const mark: Mark =
           j >= current.length
             ? { status: "todo", ch }
-            : current[j] === ch
+            : sameChar(current[j], ch)
               ? { status: "ok", ch }
               : { status: "err", ch: current[j], expected: ch };
-        if (j < current.length && current[j] === ch) correctChars++;
+        if (j < current.length && sameChar(current[j], ch)) correctChars++;
         if (j === current.length) mark.caret = true;
         marks.push(mark);
       });
@@ -58,6 +63,6 @@ export function phoneView(target: string, field: string): PhoneView {
 
   const done =
     finished.length >= want.length ||
-    (finished.length === want.length - 1 && current === want[want.length - 1]);
+    (finished.length === want.length - 1 && sameWord(current, want[want.length - 1]));
   return { marks, committed: Math.min(finished.length, want.length), wrongWords, correctChars, done };
 }

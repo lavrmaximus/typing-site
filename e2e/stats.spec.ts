@@ -42,3 +42,18 @@ test("chart points have a hover tooltip", async ({ page }) => {
   await page.mouse.move(box.x + box.width - 4, box.y + box.height / 2);
   await expect(page.getByTestId("chart-tooltip")).toContainText("wpm");
 });
+
+test("keyboard and phone results are kept apart", async ({ page }) => {
+  const base = { mode: "words", lang: "en", accuracy: 97, errors: 1, durationMs: 30_000, chars: 200, missed: {} };
+  await page.addInitScript((rs) => localStorage.setItem("ritm.guest.results", JSON.stringify(rs)), [
+    { ...base, at: 1_000, cpm: 400, input: "keys" },
+    { ...base, at: 2_000, cpm: 500 },
+    { ...base, at: 3_000, cpm: 150, input: "phone" },
+  ]);
+  await page.goto("/en/stats");
+  await expect(page.getByTestId("input-keys")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByTestId("tile-count")).toHaveText("2");
+  await page.getByTestId("input-phone").click();
+  await expect(page.getByTestId("tile-count")).toHaveText("1");
+  await expect(page.getByRole("table")).toContainText("30");
+});

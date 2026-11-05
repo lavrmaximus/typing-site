@@ -54,6 +54,8 @@ class ResultIn(BaseModel):
     stars: Annotated[int | None, Field(ge=0, le=3)] = None
     missed: Annotated[dict[Annotated[str, Field(min_length=1, max_length=2)], Annotated[int, Field(ge=0, le=10_000)]], Field(max_length=300)] = {}
     at: Annotated[int | None, Field(ge=0)] = None
+    # physical keyboard or a phone's on-screen keyboard: their speeds are not comparable
+    input: Literal["keys", "phone"] = "keys"
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -163,18 +165,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     def save_results(results: Annotated[list[ResultIn], Field(max_length=500)], uid: int = Depends(require_user)):
         now = int(time.time() * 1000)
         rows = [
-            (uid, min(r.at or now, now), r.mode, r.lang, r.cpm, r.accuracy, r.errors, r.durationMs, r.chars, r.contentId, r.lessonId, r.stars, json.dumps(r.missed, ensure_ascii=False))
+            (uid, min(r.at or now, now), r.mode, r.lang, r.cpm, r.accuracy, r.errors, r.durationMs, r.chars, r.contentId, r.lessonId, r.stars, json.dumps(r.missed, ensure_ascii=False), r.input)
             for r in results
         ]
         db.executemany(
-            "insert into results(user_id, at, mode, lang, cpm, accuracy, errors, duration_ms, chars, content_id, lesson_id, stars, missed) values (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            "insert into results(user_id, at, mode, lang, cpm, accuracy, errors, duration_ms, chars, content_id, lesson_id, stars, missed, input) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             rows,
         )
         return {"saved": len(rows)}
 
     @app.get("/api/results")
     def list_results(lang: Literal["ru", "en"] | None = None, limit: Annotated[int, Field(ge=1, le=2000)] = 1000, uid: int = Depends(require_user)):
-        sql = "select at, mode, lang, cpm, accuracy, errors, duration_ms, chars, content_id, lesson_id, stars, missed from results where user_id=?"
+        sql = "select at, mode, lang, cpm, accuracy, errors, duration_ms, chars, content_id, lesson_id, stars, missed, input from results where user_id=?"
         params: tuple = (uid,)
         if lang:
             sql += " and lang=?"
@@ -182,7 +184,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         sql += " order by at desc, id desc limit ?"
         rows = db.execute(sql, params + (limit,)).fetchall()
         keys = ["at", "mode", "lang", "cpm", "accuracy", "errors", "durationMs", "chars", "contentId", "lessonId", "stars"]
-        return [{**dict(zip(keys, r[:11])), "missed": json.loads(r[11])} for r in rows]
+        return [{**dict(zip(keys, r[:11])), "missed": json.loads(r[11]), "input": r[12]} for r in rows]
 
     return app
 

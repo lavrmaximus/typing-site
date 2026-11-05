@@ -33,3 +33,17 @@ test("leading and repeated spaces from keyboards are ignored", () => {
 test("correct chars count words plus their spaces", () => {
   expect(phoneView("ab cd", "ab c").correctChars).toBe(4);
 });
+
+test("е and ё stand in for each other, both ways and in capitals", () => {
+  expect(phoneView("её ещё", "ее еще ").wrongWords).toBe(0);
+  expect(phoneView("все елка", "всё ёлка ").wrongWords).toBe(0);
+  expect(phoneView("Ёж", "Еж").done).toBe(true);
+  const v = phoneView("ёлка", "ел");
+  expect(v.marks.slice(0, 2).map((m) => m.status)).toEqual(["ok", "ok"]);
+  expect(v.marks[0].ch).toBe("ё");
+  expect(v.correctChars).toBe(2);
+});
+
+test("other letters are still strict", () => {
+  expect(phoneView("её", "ей ").wrongWords).toBe(1);
+});

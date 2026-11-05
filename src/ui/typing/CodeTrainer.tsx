@@ -102,7 +102,7 @@ function CodeSession({ id, code, lang, d, onRestart }: { id: string; code: strin
   const [prefs] = usePrefs();
   useRecordOnDone(session.done, () => ({
     mode: "code", lang, cpm: session.cpm, accuracy: session.accuracy, errors: session.errors,
-    durationMs: Math.round(session.elapsedMs), chars: codeCorrectChars(session.state), contentId: id, missed: session.state.missed,
+    durationMs: Math.round(session.elapsedMs), chars: codeCorrectChars(session.state), contentId: id, missed: session.state.missed, input: "keys",
   }));
   const { focus } = capture;
   // take focus on start, unless the visitor has already put it somewhere else

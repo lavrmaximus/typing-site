@@ -31,7 +31,8 @@ create table if not exists results (
   content_id text,
   lesson_id text,
   stars integer,
-  missed text not null default '{}'
+  missed text not null default '{}',
+  input text not null default 'keys'
 );
 create index if not exists results_user_at on results(user_id, at desc);
 """
@@ -43,7 +44,15 @@ class Database:
         self.conn.execute("pragma journal_mode=wal")
         self.conn.execute("pragma foreign_keys=on")
         self.conn.executescript(SCHEMA)
+        self._migrate()
         self.lock = threading.Lock()
+
+    def _migrate(self) -> None:
+        cols = {r[1] for r in self.conn.execute("pragma table_info(results)")}
+        if "input" not in cols:
+            # results typed before the split: all treated as physical-keyboard input
+            self.conn.execute("alter table results add column input text not null default 'keys'")
+            self.conn.commit()
 
     def execute(self, sql: str, params: tuple = ()) -> sqlite3.Cursor:
         with self.lock:

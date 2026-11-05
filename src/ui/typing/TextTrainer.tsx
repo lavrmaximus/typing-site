@@ -139,9 +139,11 @@ function KeySession({ text, contentId, lang, d, keyboard, onRestart }: { text: s
     errors: (s) => s.errors,
   }), [text]);
   const session = useTypingSession(engine, lang === "ru" ? "cpm" : "wpm");
+  // letter-by-letter mode on a touch screen is still an on-screen keyboard
+  const coarse = useCoarsePointer();
   useRecordOnDone(session.done, () => ({
     mode: contentId ? "lit" : "words", lang, cpm: session.cpm, accuracy: session.accuracy, errors: session.errors,
-    durationMs: Math.round(session.elapsedMs), chars: textCorrectChars(session.state), contentId, missed: session.state.missed,
+    durationMs: Math.round(session.elapsedMs), chars: textCorrectChars(session.state), contentId, missed: session.state.missed, input: coarse ? "phone" : "keys",
   }));
   const [toast, setToast] = useState(false);
   const lastToast = useRef(0);
@@ -217,7 +219,7 @@ function PhoneSession({ text, contentId, lang, d, capitalize, onRestart }: { tex
   const view = useMemo(() => phoneView(text, session.state.field), [text, session.state.field]);
   useRecordOnDone(session.done, () => ({
     mode: contentId ? "lit" : "words", lang, cpm: session.cpm, accuracy: session.accuracy, errors: session.errors,
-    durationMs: Math.round(session.elapsedMs), chars: view.correctChars, contentId, missed: {},
+    durationMs: Math.round(session.elapsedMs), chars: view.correctChars, contentId, missed: {}, input: "phone",
   }));
   useEffect(() => { if (session.done) field.current?.blur(); }, [session.done]);
   useEffect(() => {

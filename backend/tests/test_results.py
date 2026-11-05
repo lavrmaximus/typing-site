@@ -45,3 +45,28 @@ def test_implausible_results_are_rejected(client):
     assert client.post("/api/results", json=[{**RESULT, "accuracy": 140}]).status_code == 422
     assert client.post("/api/results", json=[{**RESULT, "mode": "hack"}]).status_code == 422
     assert client.post("/api/results", json=[RESULT] * 501).status_code == 422
+
+
+def test_input_kind_is_kept_and_defaults_to_keys(client):
+    register(client)
+    client.post("/api/results", json=[{**RESULT, "at": 1_000}, {**RESULT, "at": 2_000, "input": "phone"}])
+    assert [r["input"] for r in client.get("/api/results").json()] == ["phone", "keys"]
+    assert client.post("/api/results", json=[{**RESULT, "input": "tablet"}]).status_code == 422
+
+
+def test_old_database_gets_the_input_column(tmp_path):
+    import sqlite3
+    from ritm_api.db import Database
+
+    path = str(tmp_path / "old.db")
+    conn = sqlite3.connect(path)
+    conn.executescript(
+        "create table results (id integer primary key, user_id integer, at integer, mode text, lang text, cpm integer,"
+        " accuracy integer, errors integer, duration_ms integer, chars integer, content_id text, lesson_id text,"
+        " stars integer, missed text not null default '{}');"
+        "insert into results(user_id, at, mode, lang, cpm, accuracy, errors, duration_ms, chars) values (1,1,'lit','ru',200,95,1,10000,30);"
+    )
+    conn.close()
+    db = Database(path)
+    assert db.execute("select input from results").fetchone()[0] == "keys"
+    Database(path)  # second start: nothing to migrate

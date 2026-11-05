@@ -35,3 +35,5 @@
 .empty { padding: 26px; text-align: center; color: var(--muted); }
 .course { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
 .course b { font: 500 26px var(--font-code); color: var(--ink); }
+.inputs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.switch { display: flex; gap: 8px; }

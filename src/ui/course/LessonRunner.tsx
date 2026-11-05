@@ -17,6 +17,7 @@ import { Readout } from "../Readout";
 import { TextWindow } from "../typing/TextWindow";
 import { useCaptureInput } from "../typing/useCaptureInput";
 import { useRecordOnDone } from "../typing/useRecordOnDone";
+import { useCoarsePointer } from "../useCoarsePointer";
 import { useTypingSession, type Engine } from "../typing/useTypingSession";
 import { Stars } from "./CourseList";
 import { lessonTitle } from "./lessonTitle";
@@ -36,6 +37,7 @@ export function LessonRunner({ lang, lessonId, d }: { lang: Lang; lessonId: stri
   const [exercises, setExercises] = useState<string[] | null>(null);
   const [step, setStep] = useState(0);
   const [done, setDone] = useState<ExerciseStats[]>([]);
+  const coarse = useCoarsePointer();
 
   useEffect(() => {
     let alive = true;
@@ -65,7 +67,7 @@ export function LessonRunner({ lang, lessonId, d }: { lang: Lang; lessonId: stri
 
   useRecordOnDone(finished, () => ({
     mode: "lesson", lang, cpm: total.cpm, accuracy: total.acc, errors: total.errors, durationMs: Math.round(total.ms),
-    chars: total.correct, lessonId, stars: total.stars, missed: total.missed,
+    chars: total.correct, lessonId, stars: total.stars, missed: total.missed, input: coarse ? "phone" : "keys",
   }));
 
   return (

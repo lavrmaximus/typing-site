@@ -5,7 +5,6 @@
   border-radius: var(--r-key); border: 1px solid var(--cap-border);
   background: var(--cap); color: var(--cap-ink); font: 500 12.5px var(--font-ui);
   box-shadow: 0 var(--depth) 0 var(--cap-edge);
-  backdrop-filter: blur(4px);
   transition: transform 0.09s var(--spring), box-shadow 0.09s, background-color 0.25s, color 0.25s;
 }
 .l { position: absolute; left: 8px; top: 5px; text-transform: uppercase; }
